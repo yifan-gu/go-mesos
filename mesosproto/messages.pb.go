@@ -4,11 +4,11 @@
 
 package mesosproto
 
-import proto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import proto "code.google.com/p/gogoprotobuf/proto"
 import json "encoding/json"
 import math "math"
 
-// discarding unused import gogoproto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
 
 // Reference proto, json, and math imports to suppress error if they are not otherwise used.
 var _ = proto.Marshal

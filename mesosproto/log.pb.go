@@ -26,14 +26,14 @@
 */
 package mesosproto
 
-import proto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import proto "code.google.com/p/gogoprotobuf/proto"
 import json "encoding/json"
 import math "math"
 
-// discarding unused import gogoproto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
 
 import io "io"
-import code_google_com_p_gogoprotobuf_proto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import code_google_com_p_gogoprotobuf_proto "code.google.com/p/gogoprotobuf/proto"
 
 import fmt "fmt"
 import strings "strings"
@@ -41,7 +41,7 @@ import reflect "reflect"
 
 import fmt1 "fmt"
 import strings1 "strings"
-import code_google_com_p_gogoprotobuf_proto1 "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import code_google_com_p_gogoprotobuf_proto1 "code.google.com/p/gogoprotobuf/proto"
 import sort "sort"
 import strconv "strconv"
 import reflect1 "reflect"
@@ -2694,7 +2694,11 @@ func randFieldLog(data []byte, r randyLog, fieldNumber int, wire int) []byte {
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateLog(data, uint64(key))
-		data = encodeVarintPopulateLog(data, uint64(r.Int63()))
+		v29 := r.Int63()
+		if r.Intn(2) == 0 {
+			v29 *= -1
+		}
+		data = encodeVarintPopulateLog(data, uint64(v29))
 	case 1:
 		data = encodeVarintPopulateLog(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))

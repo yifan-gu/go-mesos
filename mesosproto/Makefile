@@ -1,3 +1,2 @@
 all: *.proto
-	protoc --proto_path=${GOPATH}/src:. --gogo_out=. *.proto
-	sed -i 's/code\.google\.com/github\.com\/yifan-gu\/go-mesos\/3rdparty\/code.google.com/g' *.go
+	protoc --proto_path=${GOPATH}/src:${GOPATH}/src/code.google.com/p/gogoprotobuf/protobuf:. --gogo_out=. *.proto

@@ -4,15 +4,15 @@
 
 package mesosproto
 
-import proto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import proto "code.google.com/p/gogoprotobuf/proto"
 import json "encoding/json"
 import math "math"
 
-// discarding unused import gogoproto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
 
 import io1 "io"
 import math1 "math"
-import code_google_com_p_gogoprotobuf_proto2 "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import code_google_com_p_gogoprotobuf_proto2 "code.google.com/p/gogoprotobuf/proto"
 
 import fmt3 "fmt"
 import strings2 "strings"
@@ -22,7 +22,7 @@ import math2 "math"
 
 import fmt4 "fmt"
 import strings3 "strings"
-import code_google_com_p_gogoprotobuf_proto3 "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import code_google_com_p_gogoprotobuf_proto3 "code.google.com/p/gogoprotobuf/proto"
 import sort1 "sort"
 import strconv1 "strconv"
 import reflect3 "reflect"
@@ -9698,7 +9698,7 @@ func (m *SlaveInfo) Size() (n int) {
 		n += 1 + l + sovMesos(uint64(l))
 	}
 	if m.Port != nil {
-		n += 1 + sovMesos(uint64(*m.Port))
+		n += 1 + sovMesos(uint64(uint32(*m.Port)))
 	}
 	if len(m.Resources) > 0 {
 		for _, e := range m.Resources {
@@ -9724,7 +9724,7 @@ func (m *SlaveInfo) Size() (n int) {
 		n += 1 + l + sovMesos(uint64(l))
 	}
 	if m.WebuiPort != nil {
-		n += 1 + sovMesos(uint64(*m.WebuiPort))
+		n += 1 + sovMesos(uint64(uint32(*m.WebuiPort)))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -10612,6 +10612,9 @@ func NewPopulatedFrameworkInfo(r randyMesos, easy bool) *FrameworkInfo {
 	}
 	if r.Intn(10) != 0 {
 		v9 := r.Float64()
+		if r.Intn(2) == 0 {
+			v9 *= -1
+		}
 		this.FailoverTimeout = &v9
 	}
 	if r.Intn(10) != 0 {
@@ -10643,14 +10646,23 @@ func NewPopulatedHealthCheck(r randyMesos, easy bool) *HealthCheck {
 	}
 	if r.Intn(10) != 0 {
 		v14 := r.Float64()
+		if r.Intn(2) == 0 {
+			v14 *= -1
+		}
 		this.DelaySeconds = &v14
 	}
 	if r.Intn(10) != 0 {
 		v15 := r.Float64()
+		if r.Intn(2) == 0 {
+			v15 *= -1
+		}
 		this.IntervalSeconds = &v15
 	}
 	if r.Intn(10) != 0 {
 		v16 := r.Float64()
+		if r.Intn(2) == 0 {
+			v16 *= -1
+		}
 		this.TimeoutSeconds = &v16
 	}
 	if r.Intn(10) != 0 {
@@ -10659,6 +10671,9 @@ func NewPopulatedHealthCheck(r randyMesos, easy bool) *HealthCheck {
 	}
 	if r.Intn(10) != 0 {
 		v18 := r.Float64()
+		if r.Intn(2) == 0 {
+			v18 *= -1
+		}
 		this.GracePeriodSeconds = &v18
 	}
 	if r.Intn(10) != 0 {
@@ -10816,6 +10831,9 @@ func NewPopulatedSlaveInfo(r randyMesos, easy bool) *SlaveInfo {
 	this.Hostname = &v39
 	if r.Intn(10) != 0 {
 		v40 := r.Int31()
+		if r.Intn(2) == 0 {
+			v40 *= -1
+		}
 		this.Port = &v40
 	}
 	if r.Intn(10) != 0 {
@@ -10845,6 +10863,9 @@ func NewPopulatedSlaveInfo(r randyMesos, easy bool) *SlaveInfo {
 	}
 	if r.Intn(10) != 0 {
 		v45 := r.Int31()
+		if r.Intn(2) == 0 {
+			v45 *= -1
+		}
 		this.WebuiPort = &v45
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -10878,6 +10899,9 @@ func NewPopulatedValue(r randyMesos, easy bool) *Value {
 func NewPopulatedValue_Scalar(r randyMesos, easy bool) *Value_Scalar {
 	this := &Value_Scalar{}
 	v47 := r.Float64()
+	if r.Intn(2) == 0 {
+		v47 *= -1
+	}
 	this.Value = &v47
 	if !easy && r.Intn(10) != 0 {
 		this.XXX_unrecognized = randUnrecognizedMesos(r, 2)
@@ -10989,17 +11013,29 @@ func NewPopulatedResource(r randyMesos, easy bool) *Resource {
 func NewPopulatedResourceStatistics(r randyMesos, easy bool) *ResourceStatistics {
 	this := &ResourceStatistics{}
 	v58 := r.Float64()
+	if r.Intn(2) == 0 {
+		v58 *= -1
+	}
 	this.Timestamp = &v58
 	if r.Intn(10) != 0 {
 		v59 := r.Float64()
+		if r.Intn(2) == 0 {
+			v59 *= -1
+		}
 		this.CpusUserTimeSecs = &v59
 	}
 	if r.Intn(10) != 0 {
 		v60 := r.Float64()
+		if r.Intn(2) == 0 {
+			v60 *= -1
+		}
 		this.CpusSystemTimeSecs = &v60
 	}
 	if r.Intn(10) != 0 {
 		v61 := r.Float64()
+		if r.Intn(2) == 0 {
+			v61 *= -1
+		}
 		this.CpusLimit = &v61
 	}
 	if r.Intn(10) != 0 {
@@ -11012,6 +11048,9 @@ func NewPopulatedResourceStatistics(r randyMesos, easy bool) *ResourceStatistics
 	}
 	if r.Intn(10) != 0 {
 		v64 := r.Float64()
+		if r.Intn(2) == 0 {
+			v64 *= -1
+		}
 		this.CpusThrottledTimeSecs = &v64
 	}
 	if r.Intn(10) != 0 {
@@ -11069,8 +11108,14 @@ func NewPopulatedResourceUsage(r randyMesos, easy bool) *ResourceUsage {
 func NewPopulatedPerfStatistics(r randyMesos, easy bool) *PerfStatistics {
 	this := &PerfStatistics{}
 	v71 := r.Float64()
+	if r.Intn(2) == 0 {
+		v71 *= -1
+	}
 	this.Timestamp = &v71
 	v72 := r.Float64()
+	if r.Intn(2) == 0 {
+		v72 *= -1
+	}
 	this.Duration = &v72
 	if r.Intn(10) != 0 {
 		v73 := uint64(r.Uint32())
@@ -11114,10 +11159,16 @@ func NewPopulatedPerfStatistics(r randyMesos, easy bool) *PerfStatistics {
 	}
 	if r.Intn(10) != 0 {
 		v83 := r.Float64()
+		if r.Intn(2) == 0 {
+			v83 *= -1
+		}
 		this.CpuClock = &v83
 	}
 	if r.Intn(10) != 0 {
 		v84 := r.Float64()
+		if r.Intn(2) == 0 {
+			v84 *= -1
+		}
 		this.TaskClock = &v84
 	}
 	if r.Intn(10) != 0 {
@@ -11393,6 +11444,9 @@ func NewPopulatedTaskStatus(r randyMesos, easy bool) *TaskStatus {
 	}
 	if r.Intn(10) != 0 {
 		v135 := r.Float64()
+		if r.Intn(2) == 0 {
+			v135 *= -1
+		}
 		this.Timestamp = &v135
 	}
 	if r.Intn(10) != 0 {
@@ -11409,6 +11463,9 @@ func NewPopulatedFilters(r randyMesos, easy bool) *Filters {
 	this := &Filters{}
 	if r.Intn(10) != 0 {
 		v137 := r.Float64()
+		if r.Intn(2) == 0 {
+			v137 *= -1
+		}
 		this.RefuseSeconds = &v137
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -11615,6 +11672,9 @@ func NewPopulatedRateLimit(r randyMesos, easy bool) *RateLimit {
 	this := &RateLimit{}
 	if r.Intn(10) != 0 {
 		v153 := r.Float64()
+		if r.Intn(2) == 0 {
+			v153 *= -1
+		}
 		this.Qps = &v153
 	}
 	v154 := randStringMesos(r)
@@ -11681,7 +11741,11 @@ func randFieldMesos(data []byte, r randyMesos, fieldNumber int, wire int) []byte
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateMesos(data, uint64(key))
-		data = encodeVarintPopulateMesos(data, uint64(r.Int63()))
+		v157 := r.Int63()
+		if r.Intn(2) == 0 {
+			v157 *= -1
+		}
+		data = encodeVarintPopulateMesos(data, uint64(v157))
 	case 1:
 		data = encodeVarintPopulateMesos(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -12032,13 +12096,7 @@ func (m *HealthCheck_HTTP) MarshalTo(data []byte) (n int, err error) {
 		for _, num := range m.Statuses {
 			data[i] = 0x20
 			i++
-			for num >= 1<<7 {
-				data[i] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				i++
-			}
-			data[i] = uint8(num)
-			i++
+			i = encodeVarintMesos(data, i, uint64(num))
 		}
 	}
 	if m.XXX_unrecognized != nil {
@@ -12349,7 +12407,7 @@ func (m *SlaveInfo) MarshalTo(data []byte) (n int, err error) {
 	if m.Port != nil {
 		data[i] = 0x40
 		i++
-		i = encodeVarintMesos(data, i, uint64(*m.Port))
+		i = encodeVarintMesos(data, i, uint64(uint32(*m.Port)))
 	}
 	if len(m.Resources) > 0 {
 		for _, msg := range m.Resources {
@@ -12404,7 +12462,7 @@ func (m *SlaveInfo) MarshalTo(data []byte) (n int, err error) {
 	if m.WebuiPort != nil {
 		data[i] = 0x20
 		i++
-		i = encodeVarintMesos(data, i, uint64(*m.WebuiPort))
+		i = encodeVarintMesos(data, i, uint64(uint32(*m.WebuiPort)))
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)

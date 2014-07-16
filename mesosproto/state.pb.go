@@ -4,14 +4,14 @@
 
 package mesosproto
 
-import proto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import proto "code.google.com/p/gogoprotobuf/proto"
 import json "encoding/json"
 import math "math"
 
-// discarding unused import gogoproto "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
 
 import io2 "io"
-import code_google_com_p_gogoprotobuf_proto4 "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import code_google_com_p_gogoprotobuf_proto4 "code.google.com/p/gogoprotobuf/proto"
 
 import fmt6 "fmt"
 import strings4 "strings"
@@ -19,7 +19,7 @@ import reflect4 "reflect"
 
 import fmt7 "fmt"
 import strings5 "strings"
-import code_google_com_p_gogoprotobuf_proto5 "github.com/yifan-gu/go-mesos/3rdparty/code.google.com/p/gogoprotobuf/proto"
+import code_google_com_p_gogoprotobuf_proto5 "code.google.com/p/gogoprotobuf/proto"
 import sort2 "sort"
 import strconv2 "strconv"
 import reflect5 "reflect"
@@ -749,7 +749,11 @@ func randFieldState(data []byte, r randyState, fieldNumber int, wire int) []byte
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateState(data, uint64(key))
-		data = encodeVarintPopulateState(data, uint64(r.Int63()))
+		v7 := r.Int63()
+		if r.Intn(2) == 0 {
+			v7 *= -1
+		}
+		data = encodeVarintPopulateState(data, uint64(v7))
 	case 1:
 		data = encodeVarintPopulateState(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
