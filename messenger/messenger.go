@@ -7,7 +7,6 @@ import (
 
 	"code.google.com/p/gogoprotobuf/proto"
 	log "github.com/golang/glog"
-	"github.com/yifan-gu/messenger/transporter"
 )
 
 const preparePeriod = time.Second * 1
@@ -15,81 +14,64 @@ const preparePeriod = time.Second * 1
 // MessageHandler is the callback of the message.
 type MessageHandler func(proto.Message)
 
-type messageRecord struct {
-	handler  MessageHandler
-	endpoint string
-}
-
-type message struct {
-	hostport string
-	endpoint string
-	message  proto.Message
-	data     []byte
-}
-
 // Messenger defines the interfaces that should be implemented.
 type Messenger interface {
-	Install(handler MessageHandler, msg proto.Message, endpoint string) error
-	Send(hostport string, msg proto.Message) error
+	Install(handler MessageHandler, msg proto.Message) error
+	Send(upid *upid.UPID, msg proto.Message) error
 	Start() error
 	Stop()
 }
 
 // MesosMessenger is an implementation of the Messenger interface.
 type MesosMessenger struct {
-	hostport          string
+	upid              *upid.UPID
 	inQueue           chan *message
 	outQueue          chan *message
-	installedMessages map[reflect.Type]*messageRecord
-	endpointToHandler map[string]MessageHandler
+	installedMessages map[string]reflect.Type
+	installedHandlers map[string]MessageHandler
 	stop              chan struct{}
 	tr                Transporter
 }
 
 // NewMesosMessenger creates a new mesos messenger.
-func NewMesosMessenger(hostport string) *MesosMessenger {
+func NewMesosMessenger(upid *upid.UPID) *MesosMessenger {
 	return &MesosMessenger{
-		hostport:          hostport,
-		inQueue:           make(chan *message, defaultQueueSize),
-		outQueue:          make(chan *message, defaultQueueSize),
-		installedMessages: make(map[reflect.Type]*messageRecord),
-		endpointToHandler: make(map[string]MessageHandler),
+		upid:              upid,
+		inQueue:           make(chan *Mmessage, defaultQueueSize),
+		outQueue:          make(chan *Message, defaultQueueSize),
+		installedMessages: make(map[string]reflect.Type),
+		messageHandlers:   make(map[string]MessageHandler),
 		stop:              make(chan struct{}),
-		tr:                transporter.NewHTTPTransporter(hostport),
+		tr:                transporter.NewHTTPTransporter(upid),
 	}
 }
 
 // Install installs the message with the given handler.
-func (m *MesosMessenger) Install(handler MessageHandler, msg proto.Message, endpoint string) error {
+func (m *MesosMessenger) Install(msg proto.Message, handler MessageHandler) error {
 	mtype := reflect.TypeOf(msg)
+	name := getMessageName(msg)
+
 	// Check if the message is already installed.
-	if _, ok := m.installedMessages[mtype]; ok {
-		err := fmt.Errorf("Message %v is already installed", mtype)
-		log.Errorf("Failed to install message: %v\n", err)
+	if _, ok := m.installedMessages[name]; ok {
+		err := fmt.Errorf("Message %v is already installed", name)
+		log.Errorf("Failed to install message %v: %v\n", name, err)
 		return err
 	}
-	m.installedMessages[mtype] = &messageRecord{handler, endpoint}
-	// Check if the endpoint is already installed.
-	if mtype, ok := m.endpointToType[endpoint]; ok {
-		err := fmt.Errorf("Endpoint is already installed with %v", mtype)
-		log.Errorf("Failed to install message: %v\n", err)
-		return err
-	}
-	m.endpointToType[endpoint] = mtype
-	m.tr.Install(endpoint)
+	m.installedMessages[name] = mtype
+	m.installedHandlers[name] = handler
+	m.tr.Install(name)
 	return nil
 }
 
 // Send puts a message into the sending queue, waiting to be sent.
-func (m *MesosMessenger) Send(hostport string, msg proto.Message) error {
-	mtype := reflect.TypeOf(msg)
-	rec, ok := m.installedMessages[mtype]
-	if !ok {
-		err := fmt.Errorf("Message %v is not installed", mtype)
-		log.Errorf("Failed to send message: %v\n", err)
+func (m *MesosMessenger) Send(upid upid.UPID, msg proto.Message) error {
+	name := getMessageName(msg)
+	if _, ok := m.installedMessages[name]; !ok {
+		err := fmt.Errorf("Message %v is not installed", name)
+		log.Errorf("Failed to send message %v: %v\n", name, err)
 		return err
 	}
-	m.outQueue <- &message{hostport, rec.endpoint, msg}
+	m.outQueue <- &Message{upid, name, msg, nil}
 }
 
 // Start starts the messenger.
@@ -125,12 +107,13 @@ func (m *MesosMessenger) outgoingLoop() {
 		case <-m.stop:
 			return
 		case msg := <-m.outQueue:
-			b, err := proto.Marshal(msg.message)
+			b, err := proto.Marshal(msg.ProtoMessage)
 			if err != nil {
 				log.Errorf("Failed to send message %v: %v\n", msg, err)
 				continue
 			}
-			if err := m.tr.Send(msg.hostport, msg.endpoint, msg.data); err != nil {
+			msg.Bytes = b
+			if err := m.tr.Send(msg); err != nil {
 				log.Errorf("Failed to send message %v: %v\n", msg, err)
 				continue
 			}
@@ -145,12 +128,12 @@ func (m *MesosMessenger) decodingLoop() {
 		case <-m.stop:
 			return
 		case msg := <-m.inQueue:
-			if err := proto.Unmarshal(msg.data, msg.message); err != nil {
+			if err := proto.Unmarshal(msg.Bytes, msg.ProtoMessage); err != nil {
 				log.Errorf("Failed to unmarshal message %v: %v\n", msg, err)
 				continue
 			}
 			// TODO(yifan): Catch panic.
-			m.endpointToHandler[msg.endpoint](msg.message)
+			m.installedHandlers[msg.Name](msg.ProtoMessage)
 		}
 	}
 }
@@ -164,13 +147,13 @@ func (m *MesosMessenger) incomingLoop() {
 			return
 		default:
 		}
-		b, hostport, endpoint := m.tr.Recv()
-		msg := reflect.New(m.endpointToHandler[endpoint]).Interface().(proto.Message)
-		m.inQueue <- &message{
-			hostport: hostport,
-			endpoint: endpoint,
-			message:  msg,
-			data:     b,
-		}
+		msg := m.tr.Recv()
+		msg.ProtoMessage := reflect.New(m.installedMessages[msg.Name]).Interface().(proto.Message)
+		m.inQueue <- msg
 	}
+}
+
+// getMessageName returns the name of the message in the mesos manner.
+func getMessageName(msg proto.Message) string {
+	return fmt.Sprintf("%v.%v", "mesos.internal", reflect.TypeOf(msg).Name())
 }
