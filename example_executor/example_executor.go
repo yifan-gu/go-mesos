@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/yifan-gu/go-mesos/executor"
@@ -10,7 +11,7 @@ import (
 type ExampleExecutor bool
 
 func (exec *ExampleExecutor) Registered(executor.ExecutorDriver, *mesosproto.ExecutorInfo, *mesosproto.FrameworkInfo, *mesosproto.SlaveInfo) {
-	fmt.Println("Registered!!!")
+	fmt.Println("Executor Registered")
 }
 func (exec *ExampleExecutor) Reregistered(executor.ExecutorDriver, *mesosproto.SlaveInfo) {}
 func (exec *ExampleExecutor) Disconnected(executor.ExecutorDriver)                        {}
@@ -21,6 +22,7 @@ func (exec *ExampleExecutor) Shutdown(executor.ExecutorDriver)                  
 func (exec *ExampleExecutor) Error(executor.ExecutorDriver, string)                       {}
 
 func main() {
+	flag.Parse()
 	driver := executor.NewMesosExecutorDriver()
 	driver.Executor = new(ExampleExecutor)
 	status, err := driver.Start()
@@ -28,6 +30,6 @@ func main() {
 		fmt.Println("Get error:", err)
 		return
 	}
-	fmt.Println(status)
+	fmt.Println("status", status)
 	select {}
 }

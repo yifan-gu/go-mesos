@@ -19,12 +19,12 @@
 package messenger
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/yifan-gu/go-mesos/upid"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"net/url"
 
 	log "github.com/golang/glog"
 )
@@ -61,7 +61,7 @@ func NewHTTPTransporter(upid *upid.UPID) *HTTPTransporter {
 
 // Send sends the message to its specified upid.
 func (t *HTTPTransporter) Send(msg *Message) error {
-	log.V(2).Infof("Sending message to %v\n", msg.UPID)
+	log.V(2).Infof("Sending message to %v via http\n", msg.UPID)
 	req, err := t.makeLibprocessRequest(msg)
 	if err != nil {
 		log.Errorf("Failed to make libprocess request: %v\n", err)
@@ -90,7 +90,9 @@ func (t *HTTPTransporter) Install(msgName string) {
 // Start starts the http transporter. This will block, should be put
 // in a goroutine.
 func (t *HTTPTransporter) Start() error {
-	ln, err := net.Listen("tcp", net.JoinHostPort(t.UPID.Host, t.UPID.Port))
+	// NOTE: Explicitly specifis IPv4 because Libprocess
+	// only supports IPv4 for now.
+	ln, err := net.Listen("tcp4", net.JoinHostPort(t.UPID.Host, t.UPID.Port))
 	if err != nil {
 		return err
 	}
@@ -113,14 +115,15 @@ func (t *HTTPTransporter) Stop() error {
 }
 
 func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO(yifan): Verify it's a libprocess request.
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Failed to read HTTP body: %v\n", err)
 		return
 	}
-	log.V(2).Infof("Receiving message from %v\n", r.RemoteAddr)
+	log.V(2).Infof("Receiving message from %v, length %v\n", r.RemoteAddr, len(data))
 	t.messageQueue <- &Message{
-		UPID:         nil, // TODO(yifan): Set UPID.
+		UPID:         nil,
 		Name:         extractNameFromRequestURI(r.RequestURI),
 		ProtoMessage: nil,
 		Bytes:        data,
@@ -128,19 +131,13 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (t *HTTPTransporter) makeLibprocessRequest(msg *Message) (*http.Request, error) {
-	hostport := net.JoinHostPort(t.UPID.Host, t.UPID.Port)
-	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.MakeRequestURI())
-	url, err := url.Parse(targetURL)
+	hostport := net.JoinHostPort(msg.UPID.Host, msg.UPID.Port)
+	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.RequestPATH())
+	req, err := http.NewRequest("POST", targetURL, bytes.NewReader(msg.Bytes))
 	if err != nil {
-		log.Errorf("Faild to parse url %v: %v\n", targetURL, url)
+		log.Errorf("Failed to create request: %v\n", err)
 		return nil, err
 	}
-	req := &http.Request{
-		Method: "POST",
-		URL:    url,
-		Header: map[string][]string{
-			"Libprocess-From": {t.UPID.String()},
-		},
-	}
+	req.Header.Add("Libprocess-From", t.UPID.String())
 	return req, nil
 }

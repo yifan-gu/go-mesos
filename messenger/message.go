@@ -34,8 +34,8 @@ type Message struct {
 	Bytes        []byte
 }
 
-// MakeRequestURI returns the request URI of the message.
-func (m *Message) MakeRequestURI() string {
+// RequestPATH returns the request URI of the message.
+func (m *Message) RequestPATH() string {
 	return fmt.Sprintf("/%s/%s", m.UPID.ID, m.Name)
 }
 

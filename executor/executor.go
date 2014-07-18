@@ -89,17 +89,19 @@ type MesosExecutorDriver struct {
 func NewMesosExecutorDriver() *MesosExecutorDriver {
 	driver := &MesosExecutorDriver{}
 
+	driver.status = mesosproto.Status_DRIVER_NOT_STARTED
 	driver.cond = make(chan bool, 1)
 	driver.updates = make(map[string]*mesosproto.StatusUpdate)
 	driver.tasks = make(map[string]*mesosproto.TaskInfo)
 	// TODO(yifan): Set executor cnt.
-	driver.messenger = messenger.NewMesosMessenger(&upid.UPID{ID: "Executor(1)"})
+	driver.messenger = messenger.NewMesosMessenger(&upid.UPID{ID: "executor(1)"})
 	return driver
 }
 
 // init initializes the driver.
 func (driver *MesosExecutorDriver) init() error {
-	log.Infof("Init mesos executor driver\n Version: %v\n", MesosVersion)
+	log.Infof("Init mesos executor driver\n")
+	log.Infof("Version: %v\n", MesosVersion)
 
 	// Install handlers.
 	// TODO(yifan): Check errors.
@@ -148,6 +150,7 @@ func (driver *MesosExecutorDriver) Start() (mesosproto.Status, error) {
 
 	// Set status.
 	driver.status = mesosproto.Status_DRIVER_RUNNING
+	log.Infoln("Mesos executor is running")
 	return driver.status, nil
 }
 
@@ -192,7 +195,6 @@ func (driver *MesosExecutorDriver) parseEnviroments() error {
 	value = os.Getenv("MESOS_SLAVE_PID")
 	if len(value) == 0 {
 		err := fmt.Errorf("Cannot find MESOS_SLAVE_PID in the environment")
-		log.Errorf("Failed to parse environments: %v\n", err)
 		return err
 	}
 	upid, err := upid.Parse(value)

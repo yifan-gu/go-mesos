@@ -70,16 +70,21 @@ func NewMesosMessenger(upid *upid.UPID) *MesosMessenger {
 
 // Install installs the handler with the given message.
 func (m *MesosMessenger) Install(handler MessageHandler, msg proto.Message) error {
-	mtype := reflect.TypeOf(msg)
 	name := getMessageName(msg)
-
+	mtype := reflect.TypeOf(msg)
+	// Check if the message is a pointer.
+	if mtype.Kind() != reflect.Ptr {
+		err := fmt.Errorf("Message %v is not a Ptr type")
+		log.Errorf("Failed to install message %v: %v\n", name, err)
+		return err
+	}
 	// Check if the message is already installed.
 	if _, ok := m.installedMessages[name]; ok {
 		err := fmt.Errorf("Message %v is already installed", name)
 		log.Errorf("Failed to install message %v: %v\n", name, err)
 		return err
 	}
-	m.installedMessages[name] = mtype
+	m.installedMessages[name] = mtype.Elem()
 	m.installedHandlers[name] = handler
 	m.tr.Install(name)
 	return nil
@@ -91,11 +96,7 @@ func (m *MesosMessenger) Install(handler MessageHandler, msg proto.Message) erro
 // but we need to verify this later.
 func (m *MesosMessenger) Send(upid *upid.UPID, msg proto.Message) error {
 	name := getMessageName(msg)
-	if _, ok := m.installedMessages[name]; !ok {
-		err := fmt.Errorf("Message %v is not installed", name)
-		log.Errorf("Failed to send message %v: %v\n", name, err)
-		return err
-	}
+	log.Infof("Sending message %v to %v\n", name, upid)
 	m.outQueue <- &Message{upid, name, msg, nil}
 	return nil
 }
@@ -142,7 +143,7 @@ func (m *MesosMessenger) outgoingLoop() {
 			}
 			msg.Bytes = b
 			if err := m.tr.Send(msg); err != nil {
-				log.Errorf("Failed to send message %v: %v\n", msg, err)
+				log.Errorf("Failed to send message %v: %v\n", msg.Name, err)
 				continue
 			}
 		}
@@ -184,5 +185,5 @@ func (m *MesosMessenger) incomingLoop() {
 
 // getMessageName returns the name of the message in the mesos manner.
 func getMessageName(msg proto.Message) string {
-	return fmt.Sprintf("%v.%v", "mesos.internal", reflect.TypeOf(msg).Name())
+	return fmt.Sprintf("%v.%v", "mesos.internal", reflect.TypeOf(msg).Elem().Name())
 }
