@@ -1,7 +1,7 @@
 package detector
 
 import (
-	log "github.com/yifan-gu/go-mesos/3rdparty/github.com/golang/glog"
+	log "github.com/golang/glog"
 	mesos "github.com/yifan-gu/go-mesos/mesosproto"
 )
 

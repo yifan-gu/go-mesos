@@ -21,7 +21,7 @@ package scheduler
 import (
 	"sync"
 
-	//log "github.com/yifan-gu/go-mesos/3rdparty/github.com/golang/glog"
+	//log "github.com/golang/glog"
 	mesos "github.com/yifan-gu/go-mesos/mesosproto"
 	//messenger "github.com/yifan-gu/go-mesos/messenger"
 )

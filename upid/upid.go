@@ -16,20 +16,38 @@
  * limitations under the License.
  */
 
-package executor
+package upid
 
 import (
-	"github.com/yifan-gu/go-mesos/mesosproto"
+	"fmt"
+	"strings"
 )
 
-type ExecutorDriver interface {
-	Init() error
-	Start() error
-	Stop() error
-	Abort() error
-	Join() error
-	Run() error
-	SendStatusUpdate(*TaskStatus) error
-	SendFrameworkMessage(string) error
-	Destroy()
+// UPID is a equivalent of the UPID in libprocess.
+type UPID struct {
+	ID   string
+	Host string
+	Port string
+}
+
+// Parse parses the UPID from the input string.
+func Parse(input string) (*UPID, error) {
+	upid := new(UPID)
+	splits := strings.Split(input, "@")
+	if len(splits) != 2 {
+		return nil, fmt.Errorf("Expect one `@' in the input")
+	}
+	upid.ID = splits[0]
+	hostport := strings.Split(splits[1], ":")
+	if len(hostport) != 2 {
+		return nil, fmt.Errorf("Expect one `:' in the hostport")
+	}
+	// TODO(yifan): Validate the host:port's format.
+	upid.Host, upid.Port = hostport[0], hostport[1]
+	return upid, nil
+}
+
+// String returns the string representation.
+func (u *UPID) String() string {
+	return fmt.Sprintf("%s@%s:%s", u.ID, u.Host, u.Port)
 }

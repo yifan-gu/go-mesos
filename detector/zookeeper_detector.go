@@ -22,7 +22,7 @@ import (
 	"net/url"
 	
 	mesos "github.com/yifan-gu/go-mesos/mesosproto"
-	log "github.com/yifan-gu/go-mesos/3rdparty/github.com/golang/glog"
+	log "github.com/golang/glog"
 )
 
 // A ZooKeeperMasterDetector uses ZooKeeper to detect new leading master.

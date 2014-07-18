@@ -1,10 +1,30 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package messenger
 
 import (
-	"bytes"
 	"fmt"
+	"github.com/yifan-gu/go-mesos/upid"
 	"io/ioutil"
+	"net"
 	"net/http"
+	"net/url"
 
 	log "github.com/golang/glog"
 )
@@ -15,12 +35,15 @@ type Transporter interface {
 	Recv() *Message
 	Install(messageName string)
 	Start() error
-	Stop()
+	Stop() error
 }
 
 // HTTPTransporter implements the interfaces of the Transporter.
 type HTTPTransporter struct {
-	upid         *upid.UPID
+	// If the host is empty("") then it will listen on localhost.
+	// If the port is empty("") then it will listen on random port.
+	UPID         *upid.UPID
+	listener     net.Listener // TODO(yifan): Change to TCPListener.
 	mux          *http.ServeMux
 	client       *http.Client
 	messageQueue chan *Message
@@ -29,7 +52,7 @@ type HTTPTransporter struct {
 // NewHTTPTransporter creates a new http transporter.
 func NewHTTPTransporter(upid *upid.UPID) *HTTPTransporter {
 	return &HTTPTransporter{
-		upid:         upid,
+		UPID:         upid,
 		messageQueue: make(chan *Message, defaultQueueSize),
 		mux:          http.NewServeMux(),
 		client:       new(http.Client),
@@ -39,7 +62,11 @@ func NewHTTPTransporter(upid *upid.UPID) *HTTPTransporter {
 // Send sends the message to its specified upid.
 func (t *HTTPTransporter) Send(msg *Message) error {
 	log.V(2).Infof("Sending message to %v\n", msg.UPID)
-	req := t.makeLibprocessRequest(msg)
+	req, err := t.makeLibprocessRequest(msg)
+	if err != nil {
+		log.Errorf("Failed to make libprocess request: %v\n", err)
+		return err
+	}
 	resp, err := t.client.Do(req)
 	if err != nil {
 		log.Errorf("Failed to POST: %v\n", err)
@@ -55,21 +82,35 @@ func (t *HTTPTransporter) Recv() *Message {
 }
 
 // Install the request URI according to the message's name.
-func (t *HTTPTransporter) Install(msg *Message) {
-	t.mux.HandleFunc(msg.MakeRequestURI(), t.messageHandler)
+func (t *HTTPTransporter) Install(msgName string) {
+	requestURI := fmt.Sprintf("/%s/%s", t.UPID.ID, msgName)
+	t.mux.HandleFunc(requestURI, t.messageHandler)
 }
 
 // Start starts the http transporter. This will block, should be put
 // in a goroutine.
 func (t *HTTPTransporter) Start() error {
-	if err := http.ListenAndServe(t.upid.Hostport(), t.mux); err != nil {
+	ln, err := net.Listen("tcp", net.JoinHostPort(t.UPID.Host, t.UPID.Port))
+	if err != nil {
+		return err
+	}
+	host, port, err := net.SplitHostPort(ln.Addr().String())
+	if err != nil {
+		return err
+	}
+	t.UPID.Host, t.UPID.Port = host, port
+	t.listener = ln
+
+	if err := http.Serve(ln, t.mux); err != nil {
 		return err
 	}
 	return nil
 }
 
-// Stop is a no-op for http transporter for now.
-func (t *HTTPTransporter) Stop() {}
+// Stop stops the http transporter by closing the listener.
+func (t *HTTPTransporter) Stop() error {
+	return t.listener.Close()
+}
 
 func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -79,7 +120,7 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 	}
 	log.V(2).Infof("Receiving message from %v\n", r.RemoteAddr)
 	t.messageQueue <- &Message{
-		UPID:         upid,
+		UPID:         nil, // TODO(yifan): Set UPID.
 		Name:         extractNameFromRequestURI(r.RequestURI),
 		ProtoMessage: nil,
 		Bytes:        data,
@@ -87,7 +128,8 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (t *HTTPTransporter) makeLibprocessRequest(msg *Message) (*http.Request, error) {
-	targetURL := fmt.Sprintf("http://%s%s", msg.upid.Hostport(), msg.MakeRequestURI())
+	hostport := net.JoinHostPort(t.UPID.Host, t.UPID.Port)
+	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.MakeRequestURI())
 	url, err := url.Parse(targetURL)
 	if err != nil {
 		log.Errorf("Faild to parse url %v: %v\n", targetURL, url)
@@ -97,7 +139,7 @@ func (t *HTTPTransporter) makeLibprocessRequest(msg *Message) (*http.Request, er
 		Method: "POST",
 		URL:    url,
 		Header: map[string][]string{
-			"User-Agent": {t.upid.String()},
+			"Libprocess-From": {t.UPID.String()},
 		},
 	}
 	return req, nil
