@@ -34,7 +34,7 @@ const (
 )
 
 // MessageHandler is the callback of the message.
-type MessageHandler func(proto.Message)
+type MessageHandler func(*upid.UPID, proto.Message)
 
 // Messenger defines the interfaces that should be implemented.
 type Messenger interface {
@@ -42,6 +42,7 @@ type Messenger interface {
 	Send(upid *upid.UPID, msg proto.Message) error
 	Start() error
 	Stop()
+	UPID() *upid.UPID
 }
 
 // MesosMessenger is an implementation of the Messenger interface.
@@ -116,6 +117,8 @@ func (m *MesosMessenger) Start() error {
 	case <-time.After(preparePeriod):
 	}
 
+	m.upid = m.tr.UPID()
+
 	go m.outgoingLoop()
 	go m.decodingLoop()
 	go m.incomingLoop()
@@ -128,6 +131,11 @@ func (m *MesosMessenger) Stop() {
 		log.Errorf("Failed to stop the transporter: %v\n", err)
 	}
 	close(m.stop)
+}
+
+// UPID returns the upid of the messenger.
+func (m *MesosMessenger) UPID() *upid.UPID {
+	return m.upid
 }
 
 func (m *MesosMessenger) outgoingLoop() {
@@ -162,7 +170,7 @@ func (m *MesosMessenger) decodingLoop() {
 				continue
 			}
 			// TODO(yifan): Catch panic.
-			m.installedHandlers[msg.Name](msg.ProtoMessage)
+			m.installedHandlers[msg.Name](msg.UPID, msg.ProtoMessage)
 		}
 	}
 }
@@ -177,8 +185,7 @@ func (m *MesosMessenger) incomingLoop() {
 		default:
 		}
 		msg := m.tr.Recv()
-		pbMsg := reflect.New(m.installedMessages[msg.Name]).Interface().(proto.Message)
-		msg.ProtoMessage = pbMsg
+		msg.ProtoMessage = reflect.New(m.installedMessages[msg.Name]).Interface().(proto.Message)
 		m.inQueue <- msg
 	}
 }
