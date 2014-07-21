@@ -3,14 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
 
 	"github.com/yifan-gu/go-mesos/executor"
 	"github.com/yifan-gu/go-mesos/mesosproto"
 )
 
-type ExampleExecutor struct {
-	done chan struct{}
-}
+type ExampleExecutor bool
 
 func (exec *ExampleExecutor) Registered(executor.ExecutorDriver, *mesosproto.ExecutorInfo, *mesosproto.FrameworkInfo, *mesosproto.SlaveInfo) {
 	fmt.Println("Executor Registered")
@@ -26,14 +25,29 @@ func (exec *ExampleExecutor) Disconnected(executor.ExecutorDriver) {
 
 func (exec *ExampleExecutor) LaunchTask(driver executor.ExecutorDriver, taskInfo *mesosproto.TaskInfo) {
 	fmt.Println("Launching task", taskInfo.GetName())
-	st, err := driver.SendStatusUpdate()
+	runningState := mesosproto.TaskState_TASK_RUNNING
+	running := &mesosproto.TaskStatus{
+		TaskId:     taskInfo.GetTaskId(),
+		State:      &runningState,
+		SlaveId:    taskInfo.GetSlaveId(),
+		ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
+	}
+
+	_, err := driver.SendStatusUpdate(running)
 	if err != nil {
 		fmt.Println("Got error", err)
 	}
 	go func() {
 		time.Sleep(time.Second * 3)
+		finishedState := mesosproto.TaskState_TASK_FINISHED
+		finished := &mesosproto.TaskStatus{
+			TaskId:     taskInfo.GetTaskId(),
+			State:      &finishedState,
+			SlaveId:    taskInfo.GetSlaveId(),
+			ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
+		}
 		fmt.Println("Task finished", taskInfo.GetName())
-		st, err := driver.SendStatusUpdate()
+		_, err := driver.SendStatusUpdate(finished)
 		if err != nil {
 			fmt.Println("Got error", err)
 		}
@@ -50,7 +64,6 @@ func (exec *ExampleExecutor) FrameworkMessage(executor.ExecutorDriver, string) {
 
 func (exec *ExampleExecutor) Shutdown(executor.ExecutorDriver) {
 	fmt.Println("Shutting down the executor")
-	close(exec.done)
 }
 
 func (exec *ExampleExecutor) Error(executor.ExecutorDriver, string) {
@@ -60,11 +73,11 @@ func (exec *ExampleExecutor) Error(executor.ExecutorDriver, string) {
 func main() {
 	flag.Parse()
 	driver := executor.NewMesosExecutorDriver()
-	driver.Executor = &ExampleExecutor{done: make(chan struct{})}
-	status, err := driver.Start()
+	driver.Executor = new(ExampleExecutor)
+	_, err := driver.Start()
 	if err != nil {
 		fmt.Println("Got error:", err)
 		return
 	}
-	<-exec.done
+	driver.Join()
 }
