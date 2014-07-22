@@ -247,7 +247,7 @@ func (driver *MesosExecutorDriver) SendStatusUpdate(taskStatus *mesosproto.TaskS
 	// Put the status update in the message.
 	message := &mesosproto.StatusUpdateMessage{
 		Update: update,
-		Pid:    proto.String(driver.slavePID.String()),
+		Pid:    proto.String(driver.self.String()),
 	}
 	// Send the message.
 	if err := driver.messenger.Send(driver.slavePID, message); err != nil {
