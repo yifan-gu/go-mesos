@@ -33,8 +33,9 @@ const (
 	preparePeriod    = time.Second * 1
 )
 
-// MessageHandler is the callback of the message.
-type MessageHandler func(*upid.UPID, proto.Message)
+// MessageHandler is the callback of the message. When the callback
+// is invoked, the sender's upid and the message is passed to the callback.
+type MessageHandler func(from *upid.UPID, pbMsg proto.Message)
 
 // Messenger defines the interfaces that should be implemented.
 type Messenger interface {

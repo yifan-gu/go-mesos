@@ -71,7 +71,7 @@ type MesosExecutorDriver struct {
 	cond            *sync.Cond
 	status          mesosproto.Status
 	messenger       messenger.Messenger
-	slaveUPID       *upid.UPID
+	slavePID        *upid.UPID
 	slaveID         *mesosproto.SlaveID
 	frameworkID     *mesosproto.FrameworkID
 	executorID      *mesosproto.ExecutorID
@@ -150,7 +150,7 @@ func (driver *MesosExecutorDriver) Start() (mesosproto.Status, error) {
 		FrameworkId: driver.frameworkID,
 		ExecutorId:  driver.executorID,
 	}
-	if err := driver.messenger.Send(driver.slaveUPID, message); err != nil {
+	if err := driver.messenger.Send(driver.slavePID, message); err != nil {
 		log.Errorf("Failed to send %v: %v\n", message, err)
 		return mesosproto.Status_DRIVER_NOT_STARTED, err
 	}
@@ -166,7 +166,10 @@ func (driver *MesosExecutorDriver) Stop() (mesosproto.Status, error) {
 	log.Infoln("Stop mesos executor driver")
 
 	driver.mutex.Lock()
-	defer driver.mutex.Unlock()
+	defer func() {
+		driver.cond.Signal()
+		driver.mutex.Unlock()
+	}()
 
 	if driver.status != mesosproto.Status_DRIVER_RUNNING && driver.status != mesosproto.Status_DRIVER_ABORTED {
 		return driver.status, nil
@@ -190,7 +193,10 @@ func (driver *MesosExecutorDriver) Abort() (mesosproto.Status, error) {
 	log.Infoln("Abort mesos executor driver")
 
 	driver.mutex.Lock()
-	defer driver.mutex.Unlock()
+	defer func() {
+		driver.cond.Signal()
+		driver.mutex.Unlock()
+	}()
 
 	if driver.status != mesosproto.Status_DRIVER_RUNNING {
 		return driver.status, nil
@@ -241,10 +247,10 @@ func (driver *MesosExecutorDriver) SendStatusUpdate(taskStatus *mesosproto.TaskS
 	// Put the status update in the message.
 	message := &mesosproto.StatusUpdateMessage{
 		Update: update,
-		Pid:    proto.String(driver.slaveUPID.String()),
+		Pid:    proto.String(driver.slavePID.String()),
 	}
 	// Send the message.
-	if err := driver.messenger.Send(driver.slaveUPID, message); err != nil {
+	if err := driver.messenger.Send(driver.slavePID, message); err != nil {
 		log.Errorf("Failed to send %v: %v\n")
 		return driver.status, err
 	}
@@ -268,7 +274,7 @@ func (driver *MesosExecutorDriver) SendFrameworkMessage(data string) (mesosproto
 		Data:        []byte(data),
 	}
 	// Send the message.
-	if err := driver.messenger.Send(driver.slaveUPID, message); err != nil {
+	if err := driver.messenger.Send(driver.slavePID, message); err != nil {
 		log.Errorf("Failed to send %v: %v\n")
 		return driver.status, err
 	}
@@ -292,30 +298,30 @@ func (driver *MesosExecutorDriver) parseEnviroments() error {
 	if len(value) == 0 {
 		return fmt.Errorf("Cannot find MESOS_SLAVE_PID in the environment")
 	}
-	driver.slaveID = &mesosproto.SlaveID{
-		Value: proto.String(value),
-	}
-
 	upid, err := upid.Parse(value)
 	if err != nil {
 		log.Errorf("Cannot parse UPID %v\n", err)
 		return err
 	}
-	driver.slaveUPID = upid
+	driver.slavePID = upid
+
+	value = os.Getenv("MESOS_SLAVE_ID")
+	if len(value) == 0 {
+		return fmt.Errorf("Cannot find MESOS_SLAVE_ID in the environment")
+	}
+	driver.slaveID = &mesosproto.SlaveID{Value: proto.String(value)}
 
 	value = os.Getenv("MESOS_FRAMEWORK_ID")
 	if len(value) == 0 {
 		return fmt.Errorf("Cannot find MESOS_FRAMEWORK_ID in the environment")
 	}
-	driver.frameworkID = new(mesosproto.FrameworkID)
-	driver.frameworkID.Value = proto.String(value)
+	driver.frameworkID = &mesosproto.FrameworkID{Value: proto.String(value)}
 
 	value = os.Getenv("MESOS_EXECUTOR_ID")
 	if len(value) == 0 {
 		return fmt.Errorf("Cannot find MESOS_EXECUTOR_ID in the environment")
 	}
-	driver.executorID = new(mesosproto.ExecutorID)
-	driver.executorID.Value = proto.String(value)
+	driver.executorID = &mesosproto.ExecutorID{Value: proto.String(value)}
 
 	value = os.Getenv("MESOS_DIRECTORY")
 	// TODO(yifan): Check if the value exists?
@@ -373,7 +379,7 @@ func (driver *MesosExecutorDriver) reconnect(from *upid.UPID, pbMsg proto.Messag
 	}
 
 	log.Infof("Received reconnect request from slave %v\n", slaveID)
-	driver.slaveUPID = from
+	driver.slavePID = from
 
 	message := &mesosproto.ReregisterExecutorMessage{
 		ExecutorId:  driver.executorID,
@@ -388,7 +394,7 @@ func (driver *MesosExecutorDriver) reconnect(from *upid.UPID, pbMsg proto.Messag
 		message.Tasks = append(message.Tasks, t)
 	}
 	// Send the message.
-	if err := driver.messenger.Send(driver.slaveUPID, message); err != nil {
+	if err := driver.messenger.Send(driver.slavePID, message); err != nil {
 		log.Errorf("Failed to send %v: %v\n")
 	}
 }
@@ -426,6 +432,8 @@ func (driver *MesosExecutorDriver) killTask(from *upid.UPID, pbMsg proto.Message
 
 func (driver *MesosExecutorDriver) statusUpdateAcknowledgement(from *upid.UPID, pbMsg proto.Message) {
 	msg := pbMsg.(*mesosproto.StatusUpdateAcknowledgementMessage)
+	log.Infof("Receiving status update acknowledgement %v", msg)
+
 	frameworkID := msg.GetFrameworkId()
 	taskID := msg.GetTaskId()
 	uuid := uuid.UUID(msg.GetUuid())

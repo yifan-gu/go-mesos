@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"code.google.com/p/gogoprotobuf/proto"
 	"github.com/yifan-gu/go-mesos/executor"
 	"github.com/yifan-gu/go-mesos/mesosproto"
 )
@@ -31,6 +32,7 @@ func (exec *ExampleExecutor) LaunchTask(driver executor.ExecutorDriver, taskInfo
 		State:      &runningState,
 		SlaveId:    taskInfo.GetSlaveId(),
 		ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
+		Message:    proto.String("Native go task is running!"),
 	}
 
 	_, err := driver.SendStatusUpdate(running)
@@ -45,6 +47,7 @@ func (exec *ExampleExecutor) LaunchTask(driver executor.ExecutorDriver, taskInfo
 			State:      &finishedState,
 			SlaveId:    taskInfo.GetSlaveId(),
 			ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
+			Message:    proto.String("Native go task is done!"),
 		}
 		fmt.Println("Task finished", taskInfo.GetName())
 		_, err := driver.SendStatusUpdate(finished)
