@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"time"
 
 	"code.google.com/p/gogoprotobuf/proto"
 	"github.com/yifan-gu/go-mesos/executor"
@@ -17,7 +16,7 @@ func (exec *ExampleExecutor) Registered(executor.ExecutorDriver, *mesosproto.Exe
 }
 
 func (exec *ExampleExecutor) Reregistered(executor.ExecutorDriver, *mesosproto.SlaveInfo) {
-	fmt.Println("Executor Reregistered")
+	fmt.Println("Executor Reregistered on")
 }
 
 func (exec *ExampleExecutor) Disconnected(executor.ExecutorDriver) {
@@ -25,7 +24,7 @@ func (exec *ExampleExecutor) Disconnected(executor.ExecutorDriver) {
 }
 
 func (exec *ExampleExecutor) LaunchTask(driver executor.ExecutorDriver, taskInfo *mesosproto.TaskInfo) {
-	fmt.Println("Launching task", taskInfo.GetName())
+	fmt.Println("Starting task", taskInfo.GetName())
 	runningState := mesosproto.TaskState_TASK_RUNNING
 	running := &mesosproto.TaskStatus{
 		TaskId:     taskInfo.GetTaskId(),
@@ -34,27 +33,25 @@ func (exec *ExampleExecutor) LaunchTask(driver executor.ExecutorDriver, taskInfo
 		ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
 		Message:    proto.String("Native go task is running!"),
 	}
-
 	_, err := driver.SendStatusUpdate(running)
 	if err != nil {
 		fmt.Println("Got error", err)
 	}
-	go func() {
-		time.Sleep(time.Second * 3)
-		finishedState := mesosproto.TaskState_TASK_FINISHED
-		finished := &mesosproto.TaskStatus{
-			TaskId:     taskInfo.GetTaskId(),
-			State:      &finishedState,
-			SlaveId:    taskInfo.GetSlaveId(),
-			ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
-			Message:    proto.String("Native go task is done!"),
-		}
-		fmt.Println("Task finished", taskInfo.GetName())
-		_, err := driver.SendStatusUpdate(finished)
-		if err != nil {
-			fmt.Println("Got error", err)
-		}
-	}()
+
+	fmt.Println("Finishing task", taskInfo.GetName())
+	finishedState := mesosproto.TaskState_TASK_FINISHED
+	finished := &mesosproto.TaskStatus{
+		TaskId:     taskInfo.GetTaskId(),
+		State:      &finishedState,
+		SlaveId:    taskInfo.GetSlaveId(),
+		ExecutorId: taskInfo.GetExecutor().GetExecutorId(),
+		Message:    proto.String("Native go task is done!"),
+	}
+	_, err = driver.SendStatusUpdate(finished)
+	if err != nil {
+		fmt.Println("Got error", err)
+	}
+	fmt.Println("Task finished", taskInfo.GetName())
 }
 
 func (exec *ExampleExecutor) KillTask(executor.ExecutorDriver, *mesosproto.TaskID) {
