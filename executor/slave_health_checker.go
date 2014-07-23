@@ -27,6 +27,7 @@ import (
 	"github.com/yifan-gu/go-mesos/upid"
 )
 
+// SlaveHealthChecker is for checking the slave's health.
 // TODO(yifan): Make it an interface?
 type SlaveHealthChecker struct {
 	slaveUPID                *upid.UPID
@@ -37,7 +38,7 @@ type SlaveHealthChecker struct {
 	C                        chan bool
 }
 
-// MakeSlaveHealthChecker creates a slave health checker and return a notification channel.
+// NewSlaveHealthChecker creates a slave health checker and return a notification channel.
 // Each time the checker thinks the slave is unhealthy, it will send a notification through the channel.
 func NewSlaveHealthChecker(slaveUPID *upid.UPID, threshold int, checkDuration time.Duration) *SlaveHealthChecker {
 	checker := &SlaveHealthChecker{
