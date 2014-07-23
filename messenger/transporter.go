@@ -137,15 +137,9 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	log.V(2).Infof("Receiving message from %v, length %v\n", from, len(data))
-	upid, err := upid.Parse(from)
-	if err != nil {
-		log.Errorf("Failed to parse libprocess-from %v: %v\n", from, err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	w.WriteHeader(http.StatusAccepted)
 	t.messageQueue <- &Message{
-		UPID:         upid,
+		UPID:         from,
 		Name:         extractNameFromRequestURI(r.RequestURI),
 		ProtoMessage: nil,
 		Bytes:        data,
@@ -164,23 +158,19 @@ func (t *HTTPTransporter) makeLibprocessRequest(msg *Message) (*http.Request, er
 	return req, nil
 }
 
-// TODO(yifan): Refactor this.
-func getLibprocessFrom(r *http.Request) (string, error) {
-	if r.Method == "POST" {
-		ua, ok := r.Header["User-Agent"]
-		if len(ua) > 1 {
-			return "", fmt.Errorf("Only support one user-agnent for now")
-		}
-		if ok && strings.HasPrefix(ua[0], "libprocess/") {
-			return ua[0][len("libprocess/"):], nil
-		}
-		lf, ok := r.Header["Libprocess-From"]
-		if len(lf) > 1 {
-			return "", fmt.Errorf("Only support one libprocess-from for now")
-		}
-		if ok {
-			return lf[0], nil
-		}
+func getLibprocessFrom(r *http.Request) (*upid.UPID, error) {
+	if r.Method != "POST" {
+		return nil, fmt.Errorf("Not a POST request")
 	}
-	return "", fmt.Errorf("Cannot determine libprocess from")
+	ua, ok := r.Header["User-Agent"]
+	if ok && strings.HasPrefix(ua[0], "libprocess/") {
+		// TODO(yifan): Just take the first field for now.
+		return upid.Parse(ua[0][len("libprocess/"):])
+	}
+	lf, ok := r.Header["Libprocess-From"]
+	if ok {
+		// TODO(yifan): Just take the first field for now.
+		return upid.Parse(lf[0])
+	}
+	return nil, fmt.Errorf("Cannot find 'User-Agent' or 'Libprocess-From'")
 }
