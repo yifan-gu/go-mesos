@@ -154,7 +154,7 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 
 func (t *HTTPTransporter) makeLibprocessRequest(msg *Message) (*http.Request, error) {
 	hostport := net.JoinHostPort(msg.UPID.Host, msg.UPID.Port)
-	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.RequestPATH())
+	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.RequestPath())
 	req, err := http.NewRequest("POST", targetURL, bytes.NewReader(msg.Bytes))
 	if err != nil {
 		log.Errorf("Failed to create request: %v\n", err)
