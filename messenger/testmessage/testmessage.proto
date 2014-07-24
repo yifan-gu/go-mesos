@@ -1,0 +1,43 @@
+package testmessage;
+
+import "code.google.com/p/gogoprotobuf/gogoproto/gogo.proto";
+
+option (gogoproto.gostring_all) = true;
+option (gogoproto.equal_all) = true;
+option (gogoproto.verbose_equal_all) = true;
+option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.stringer_all) =  true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.testgen_all) = false;
+option (gogoproto.benchgen_all) = false;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+message GoGoProtobufTestMessage1 {
+        required int32 F0 = 1;
+        required string F1 = 2;
+        required float F2 = 3;
+}
+
+message GoGoProtobufTestMessage2 {
+        required int32 F0 = 1;
+        required string F1 = 2;
+        required float F2 = 3;
+}
+
+message GoGoProtobufTestMessage3 {
+        required int32 F0 = 1;
+        required string F1 = 2;
+        required string F2 = 3;
+}
+
+message GoGoProtobufTestMessage4 {
+        required int32 F0 = 1;
+        required string F1 = 2;
+}
+
+message GoGoProtobufTestMessage5 {
+        required int32 F0 = 1;
+        required string F1 = 2;
+}

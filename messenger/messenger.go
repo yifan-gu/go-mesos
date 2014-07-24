@@ -72,19 +72,16 @@ func NewMesosMessenger(upid *upid.UPID) *MesosMessenger {
 
 // Install installs the handler with the given message.
 func (m *MesosMessenger) Install(handler MessageHandler, msg proto.Message) error {
-	name := getMessageName(msg)
-	mtype := reflect.TypeOf(msg)
 	// Check if the message is a pointer.
+	mtype := reflect.TypeOf(msg)
 	if mtype.Kind() != reflect.Ptr {
-		err := fmt.Errorf("Message %v is not a Ptr type")
-		log.Errorf("Failed to install message %v: %v\n", name, err)
-		return err
+		return fmt.Errorf("Message %v is not a Ptr type")
 	}
+
 	// Check if the message is already installed.
+	name := getMessageName(msg)
 	if _, ok := m.installedMessages[name]; ok {
-		err := fmt.Errorf("Message %v is already installed", name)
-		log.Errorf("Failed to install message %v: %v\n", name, err)
-		return err
+		return fmt.Errorf("Message %v is already installed", name)
 	}
 	m.installedMessages[name] = mtype.Elem()
 	m.installedHandlers[name] = handler
@@ -97,6 +94,9 @@ func (m *MesosMessenger) Install(handler MessageHandler, msg proto.Message) erro
 // So there is no need to fire a goroutine each time to send a message,
 // but we need to verify this later.
 func (m *MesosMessenger) Send(upid *upid.UPID, msg proto.Message) error {
+	if upid.Equal(m.upid) {
+		return fmt.Errorf("Send the message to self")
+	}
 	name := getMessageName(msg)
 	log.Infof("Sending message %v to %v\n", name, upid)
 	m.outQueue <- &Message{upid, name, msg, nil}

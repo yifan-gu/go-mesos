@@ -52,3 +52,11 @@ func Parse(input string) (*UPID, error) {
 func (u *UPID) String() string {
 	return fmt.Sprintf("%s@%s:%s", u.ID, u.Host, u.Port)
 }
+
+// Equal returns true if two upid is equal
+func (u *UPID) Equal(upid *UPID) bool {
+	if u.ID == upid.ID && u.Host == upid.Host && u.Port == upid.Port {
+		return true
+	}
+	return false
+}

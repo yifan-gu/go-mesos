@@ -140,10 +140,9 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 	log.V(2).Infof("Receiving message from %v, length %v\n", from, len(data))
 	w.WriteHeader(http.StatusAccepted)
 	t.messageQueue <- &Message{
-		UPID:         from,
-		Name:         extractNameFromRequestURI(r.RequestURI),
-		ProtoMessage: nil,
-		Bytes:        data,
+		UPID:  from,
+		Name:  extractNameFromRequestURI(r.RequestURI),
+		Bytes: data,
 	}
 }
 
