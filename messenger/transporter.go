@@ -98,6 +98,7 @@ func (t *HTTPTransporter) Start() error {
 	if err != nil {
 		return err
 	}
+	// Save the host:port in case they are not specified in upid.
 	host, port, err := net.SplitHostPort(ln.Addr().String())
 	if err != nil {
 		return err
@@ -148,7 +149,7 @@ func (t *HTTPTransporter) messageHandler(w http.ResponseWriter, r *http.Request)
 
 func (t *HTTPTransporter) makeLibprocessRequest(msg *Message) (*http.Request, error) {
 	hostport := net.JoinHostPort(msg.UPID.Host, msg.UPID.Port)
-	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.RequestPath())
+	targetURL := fmt.Sprintf("http://%s%s", hostport, msg.RequestURI())
 	req, err := http.NewRequest("POST", targetURL, bytes.NewReader(msg.Bytes))
 	if err != nil {
 		log.Errorf("Failed to create request: %v\n", err)

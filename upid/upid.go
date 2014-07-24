@@ -20,6 +20,7 @@ package upid
 
 import (
 	"fmt"
+	"net"
 	"strings"
 )
 
@@ -33,17 +34,17 @@ type UPID struct {
 // Parse parses the UPID from the input string.
 func Parse(input string) (*UPID, error) {
 	upid := new(UPID)
+
 	splits := strings.Split(input, "@")
 	if len(splits) != 2 {
 		return nil, fmt.Errorf("Expect one `@' in the input")
 	}
 	upid.ID = splits[0]
-	hostport := strings.Split(splits[1], ":")
-	if len(hostport) != 2 {
-		return nil, fmt.Errorf("Expect one `:' in the hostport")
+
+	if _, err := net.ResolveTCPAddr("tcp4", splits[1]); err != nil {
+		return nil, err
 	}
-	// TODO(yifan): Validate the host:port's format.
-	upid.Host, upid.Port = hostport[0], hostport[1]
+	upid.Host, upid.Port, _ = net.SplitHostPort(splits[1])
 	return upid, nil
 }
 

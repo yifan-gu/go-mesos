@@ -17,6 +17,10 @@
 		{
 			"ImportPath": "github.com/golang/glog",
 			"Rev": "d1c4472bf2efd3826f2b5bdcc02d8416798d678c"
+		},
+		{
+			"ImportPath": "github.com/mesosphere/testify/assert",
+			"Rev": "f27146ea31ee06ed1f7021c471320d2949c2da71"
 		}
 	]
 }
