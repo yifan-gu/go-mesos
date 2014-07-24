@@ -99,7 +99,13 @@ func (m *MesosMessenger) Send(upid *upid.UPID, msg proto.Message) error {
 	}
 	name := getMessageName(msg)
 	log.Infof("Sending message %v to %v\n", name, upid)
-	m.outQueue <- &Message{upid, name, msg, nil}
+	select {
+	case m.outQueue <- &Message{upid, name, msg, nil}:
+	default:
+		log.Warningln("Full")
+		m.outQueue <- &Message{upid, name, msg, nil}
+	}
+
 	return nil
 }
 

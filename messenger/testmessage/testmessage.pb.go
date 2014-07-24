@@ -3,17 +3,16 @@
 // DO NOT EDIT!
 
 /*
-	Package testmessage is a generated protocol buffer package.
+Package testmessage is a generated protocol buffer package.
 
-	It is generated from these files:
-		testmessage.proto
+It is generated from these files:
+	testmessage.proto
 
-	It has these top-level messages:
-		GoGoProtobufTestMessage1
-		GoGoProtobufTestMessage2
-		GoGoProtobufTestMessage3
-		GoGoProtobufTestMessage4
-		GoGoProtobufTestMessage5
+It has these top-level messages:
+	SmallMessage
+	MediumMessage
+	BigMessage
+	LargeMessage
 */
 package testmessage
 
@@ -24,14 +23,11 @@ import math "math"
 // discarding unused import gogoproto "code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
 
 import io "io"
-import math1 "math"
 import code_google_com_p_gogoprotobuf_proto "code.google.com/p/gogoprotobuf/proto"
 
 import fmt "fmt"
 import strings "strings"
 import reflect "reflect"
-
-import math2 "math"
 
 import fmt1 "fmt"
 import strings1 "strings"
@@ -48,148 +44,69 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
-type GoGoProtobufTestMessage1 struct {
-	F0               *int32   `protobuf:"varint,1,req" json:"F0,omitempty"`
-	F1               *string  `protobuf:"bytes,2,req" json:"F1,omitempty"`
-	F2               *float32 `protobuf:"fixed32,3,req" json:"F2,omitempty"`
+type SmallMessage struct {
+	Values           []string `protobuf:"bytes,1,rep" json:"Values,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (m *GoGoProtobufTestMessage1) Reset()      { *m = GoGoProtobufTestMessage1{} }
-func (*GoGoProtobufTestMessage1) ProtoMessage() {}
+func (m *SmallMessage) Reset()      { *m = SmallMessage{} }
+func (*SmallMessage) ProtoMessage() {}
 
-func (m *GoGoProtobufTestMessage1) GetF0() int32 {
-	if m != nil && m.F0 != nil {
-		return *m.F0
+func (m *SmallMessage) GetValues() []string {
+	if m != nil {
+		return m.Values
 	}
-	return 0
+	return nil
 }
 
-func (m *GoGoProtobufTestMessage1) GetF1() string {
-	if m != nil && m.F1 != nil {
-		return *m.F1
-	}
-	return ""
-}
-
-func (m *GoGoProtobufTestMessage1) GetF2() float32 {
-	if m != nil && m.F2 != nil {
-		return *m.F2
-	}
-	return 0
-}
-
-type GoGoProtobufTestMessage2 struct {
-	F0               *int32   `protobuf:"varint,1,req" json:"F0,omitempty"`
-	F1               *string  `protobuf:"bytes,2,req" json:"F1,omitempty"`
-	F2               *float32 `protobuf:"fixed32,3,req" json:"F2,omitempty"`
+type MediumMessage struct {
+	Values           []string `protobuf:"bytes,1,rep" json:"Values,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (m *GoGoProtobufTestMessage2) Reset()      { *m = GoGoProtobufTestMessage2{} }
-func (*GoGoProtobufTestMessage2) ProtoMessage() {}
+func (m *MediumMessage) Reset()      { *m = MediumMessage{} }
+func (*MediumMessage) ProtoMessage() {}
 
-func (m *GoGoProtobufTestMessage2) GetF0() int32 {
-	if m != nil && m.F0 != nil {
-		return *m.F0
+func (m *MediumMessage) GetValues() []string {
+	if m != nil {
+		return m.Values
 	}
-	return 0
+	return nil
 }
 
-func (m *GoGoProtobufTestMessage2) GetF1() string {
-	if m != nil && m.F1 != nil {
-		return *m.F1
+type BigMessage struct {
+	Values           []string `protobuf:"bytes,1,rep" json:"Values,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *BigMessage) Reset()      { *m = BigMessage{} }
+func (*BigMessage) ProtoMessage() {}
+
+func (m *BigMessage) GetValues() []string {
+	if m != nil {
+		return m.Values
 	}
-	return ""
+	return nil
 }
 
-func (m *GoGoProtobufTestMessage2) GetF2() float32 {
-	if m != nil && m.F2 != nil {
-		return *m.F2
+type LargeMessage struct {
+	Values           []string `protobuf:"bytes,1,rep" json:"Values,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *LargeMessage) Reset()      { *m = LargeMessage{} }
+func (*LargeMessage) ProtoMessage() {}
+
+func (m *LargeMessage) GetValues() []string {
+	if m != nil {
+		return m.Values
 	}
-	return 0
-}
-
-type GoGoProtobufTestMessage3 struct {
-	F0               *int32  `protobuf:"varint,1,req" json:"F0,omitempty"`
-	F1               *string `protobuf:"bytes,2,req" json:"F1,omitempty"`
-	F2               *string `protobuf:"bytes,3,req" json:"F2,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
-}
-
-func (m *GoGoProtobufTestMessage3) Reset()      { *m = GoGoProtobufTestMessage3{} }
-func (*GoGoProtobufTestMessage3) ProtoMessage() {}
-
-func (m *GoGoProtobufTestMessage3) GetF0() int32 {
-	if m != nil && m.F0 != nil {
-		return *m.F0
-	}
-	return 0
-}
-
-func (m *GoGoProtobufTestMessage3) GetF1() string {
-	if m != nil && m.F1 != nil {
-		return *m.F1
-	}
-	return ""
-}
-
-func (m *GoGoProtobufTestMessage3) GetF2() string {
-	if m != nil && m.F2 != nil {
-		return *m.F2
-	}
-	return ""
-}
-
-type GoGoProtobufTestMessage4 struct {
-	F0               *int32  `protobuf:"varint,1,req" json:"F0,omitempty"`
-	F1               *string `protobuf:"bytes,2,req" json:"F1,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
-}
-
-func (m *GoGoProtobufTestMessage4) Reset()      { *m = GoGoProtobufTestMessage4{} }
-func (*GoGoProtobufTestMessage4) ProtoMessage() {}
-
-func (m *GoGoProtobufTestMessage4) GetF0() int32 {
-	if m != nil && m.F0 != nil {
-		return *m.F0
-	}
-	return 0
-}
-
-func (m *GoGoProtobufTestMessage4) GetF1() string {
-	if m != nil && m.F1 != nil {
-		return *m.F1
-	}
-	return ""
-}
-
-type GoGoProtobufTestMessage5 struct {
-	F0               *int32  `protobuf:"varint,1,req" json:"F0,omitempty"`
-	F1               *string `protobuf:"bytes,2,req" json:"F1,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
-}
-
-func (m *GoGoProtobufTestMessage5) Reset()      { *m = GoGoProtobufTestMessage5{} }
-func (*GoGoProtobufTestMessage5) ProtoMessage() {}
-
-func (m *GoGoProtobufTestMessage5) GetF0() int32 {
-	if m != nil && m.F0 != nil {
-		return *m.F0
-	}
-	return 0
-}
-
-func (m *GoGoProtobufTestMessage5) GetF1() string {
-	if m != nil && m.F1 != nil {
-		return *m.F1
-	}
-	return ""
+	return nil
 }
 
 func init() {
 }
-func (m *GoGoProtobufTestMessage1) Unmarshal(data []byte) error {
+func (m *SmallMessage) Unmarshal(data []byte) error {
 	l := len(data)
 	index := 0
 	for index < l {
@@ -209,23 +126,6 @@ func (m *GoGoProtobufTestMessage1) Unmarshal(data []byte) error {
 		wireType := int(wire & 0x7)
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v int32
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.F0 = &v
-		case 2:
 			if wireType != 2 {
 				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
 			}
@@ -245,227 +145,7 @@ func (m *GoGoProtobufTestMessage1) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			s := string(data[index:postIndex])
-			m.F1 = &s
-			index = postIndex
-		case 3:
-			if wireType != 5 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v uint32
-			i := index + 4
-			if i > l {
-				return io.ErrUnexpectedEOF
-			}
-			index = i
-			v = uint32(data[i-4])
-			v |= uint32(data[i-3]) << 8
-			v |= uint32(data[i-2]) << 16
-			v |= uint32(data[i-1]) << 24
-			v2 := math1.Float32frombits(v)
-			m.F2 = &v2
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
-				}
-			}
-			index -= sizeOfWire
-			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
-			index += skippy
-		}
-	}
-	return nil
-}
-func (m *GoGoProtobufTestMessage2) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v int32
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.F0 = &v
-		case 2:
-			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			s := string(data[index:postIndex])
-			m.F1 = &s
-			index = postIndex
-		case 3:
-			if wireType != 5 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v uint32
-			i := index + 4
-			if i > l {
-				return io.ErrUnexpectedEOF
-			}
-			index = i
-			v = uint32(data[i-4])
-			v |= uint32(data[i-3]) << 8
-			v |= uint32(data[i-2]) << 16
-			v |= uint32(data[i-1]) << 24
-			v2 := math1.Float32frombits(v)
-			m.F2 = &v2
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
-				}
-			}
-			index -= sizeOfWire
-			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
-			index += skippy
-		}
-	}
-	return nil
-}
-func (m *GoGoProtobufTestMessage3) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v int32
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.F0 = &v
-		case 2:
-			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			s := string(data[index:postIndex])
-			m.F1 = &s
-			index = postIndex
-		case 3:
-			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			s := string(data[index:postIndex])
-			m.F2 = &s
+			m.Values = append(m.Values, string(data[index:postIndex]))
 			index = postIndex
 		default:
 			var sizeOfWire int
@@ -490,7 +170,7 @@ func (m *GoGoProtobufTestMessage3) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *GoGoProtobufTestMessage4) Unmarshal(data []byte) error {
+func (m *MediumMessage) Unmarshal(data []byte) error {
 	l := len(data)
 	index := 0
 	for index < l {
@@ -510,23 +190,6 @@ func (m *GoGoProtobufTestMessage4) Unmarshal(data []byte) error {
 		wireType := int(wire & 0x7)
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v int32
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.F0 = &v
-		case 2:
 			if wireType != 2 {
 				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
 			}
@@ -546,8 +209,7 @@ func (m *GoGoProtobufTestMessage4) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			s := string(data[index:postIndex])
-			m.F1 = &s
+			m.Values = append(m.Values, string(data[index:postIndex]))
 			index = postIndex
 		default:
 			var sizeOfWire int
@@ -572,7 +234,7 @@ func (m *GoGoProtobufTestMessage4) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *GoGoProtobufTestMessage5) Unmarshal(data []byte) error {
+func (m *BigMessage) Unmarshal(data []byte) error {
 	l := len(data)
 	index := 0
 	for index < l {
@@ -592,23 +254,6 @@ func (m *GoGoProtobufTestMessage5) Unmarshal(data []byte) error {
 		wireType := int(wire & 0x7)
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
-			}
-			var v int32
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.F0 = &v
-		case 2:
 			if wireType != 2 {
 				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
 			}
@@ -628,8 +273,7 @@ func (m *GoGoProtobufTestMessage5) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			s := string(data[index:postIndex])
-			m.F1 = &s
+			m.Values = append(m.Values, string(data[index:postIndex]))
 			index = postIndex
 		default:
 			var sizeOfWire int
@@ -654,64 +298,109 @@ func (m *GoGoProtobufTestMessage5) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (this *GoGoProtobufTestMessage1) String() string {
+func (m *LargeMessage) Unmarshal(data []byte) error {
+	l := len(data)
+	index := 0
+	for index < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if index >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[index]
+			index++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Values = append(m.Values, string(data[index:postIndex]))
+			index = postIndex
+		default:
+			var sizeOfWire int
+			for {
+				sizeOfWire++
+				wire >>= 7
+				if wire == 0 {
+					break
+				}
+			}
+			index -= sizeOfWire
+			skippy, err := code_google_com_p_gogoprotobuf_proto.Skip(data[index:])
+			if err != nil {
+				return err
+			}
+			if (index + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+			index += skippy
+		}
+	}
+	return nil
+}
+func (this *SmallMessage) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&GoGoProtobufTestMessage1{`,
-		`F0:` + valueToStringTestmessage(this.F0) + `,`,
-		`F1:` + valueToStringTestmessage(this.F1) + `,`,
-		`F2:` + valueToStringTestmessage(this.F2) + `,`,
+	s := strings.Join([]string{`&SmallMessage{`,
+		`Values:` + fmt.Sprintf("%v", this.Values) + `,`,
 		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
 }
-func (this *GoGoProtobufTestMessage2) String() string {
+func (this *MediumMessage) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&GoGoProtobufTestMessage2{`,
-		`F0:` + valueToStringTestmessage(this.F0) + `,`,
-		`F1:` + valueToStringTestmessage(this.F1) + `,`,
-		`F2:` + valueToStringTestmessage(this.F2) + `,`,
+	s := strings.Join([]string{`&MediumMessage{`,
+		`Values:` + fmt.Sprintf("%v", this.Values) + `,`,
 		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
 }
-func (this *GoGoProtobufTestMessage3) String() string {
+func (this *BigMessage) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&GoGoProtobufTestMessage3{`,
-		`F0:` + valueToStringTestmessage(this.F0) + `,`,
-		`F1:` + valueToStringTestmessage(this.F1) + `,`,
-		`F2:` + valueToStringTestmessage(this.F2) + `,`,
+	s := strings.Join([]string{`&BigMessage{`,
+		`Values:` + fmt.Sprintf("%v", this.Values) + `,`,
 		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
 }
-func (this *GoGoProtobufTestMessage4) String() string {
+func (this *LargeMessage) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&GoGoProtobufTestMessage4{`,
-		`F0:` + valueToStringTestmessage(this.F0) + `,`,
-		`F1:` + valueToStringTestmessage(this.F1) + `,`,
-		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
-		`}`,
-	}, "")
-	return s
-}
-func (this *GoGoProtobufTestMessage5) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&GoGoProtobufTestMessage5{`,
-		`F0:` + valueToStringTestmessage(this.F0) + `,`,
-		`F1:` + valueToStringTestmessage(this.F1) + `,`,
+	s := strings.Join([]string{`&LargeMessage{`,
+		`Values:` + fmt.Sprintf("%v", this.Values) + `,`,
 		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
@@ -725,85 +414,56 @@ func valueToStringTestmessage(v interface{}) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
 }
-func (m *GoGoProtobufTestMessage1) Size() (n int) {
+func (m *SmallMessage) Size() (n int) {
 	var l int
 	_ = l
-	if m.F0 != nil {
-		n += 1 + sovTestmessage(uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		l = len(*m.F1)
-		n += 1 + l + sovTestmessage(uint64(l))
-	}
-	if m.F2 != nil {
-		n += 5
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			l = len(s)
+			n += 1 + l + sovTestmessage(uint64(l))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
 	return n
 }
-func (m *GoGoProtobufTestMessage2) Size() (n int) {
+func (m *MediumMessage) Size() (n int) {
 	var l int
 	_ = l
-	if m.F0 != nil {
-		n += 1 + sovTestmessage(uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		l = len(*m.F1)
-		n += 1 + l + sovTestmessage(uint64(l))
-	}
-	if m.F2 != nil {
-		n += 5
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			l = len(s)
+			n += 1 + l + sovTestmessage(uint64(l))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
 	return n
 }
-func (m *GoGoProtobufTestMessage3) Size() (n int) {
+func (m *BigMessage) Size() (n int) {
 	var l int
 	_ = l
-	if m.F0 != nil {
-		n += 1 + sovTestmessage(uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		l = len(*m.F1)
-		n += 1 + l + sovTestmessage(uint64(l))
-	}
-	if m.F2 != nil {
-		l = len(*m.F2)
-		n += 1 + l + sovTestmessage(uint64(l))
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			l = len(s)
+			n += 1 + l + sovTestmessage(uint64(l))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
 	return n
 }
-func (m *GoGoProtobufTestMessage4) Size() (n int) {
+func (m *LargeMessage) Size() (n int) {
 	var l int
 	_ = l
-	if m.F0 != nil {
-		n += 1 + sovTestmessage(uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		l = len(*m.F1)
-		n += 1 + l + sovTestmessage(uint64(l))
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-func (m *GoGoProtobufTestMessage5) Size() (n int) {
-	var l int
-	_ = l
-	if m.F0 != nil {
-		n += 1 + sovTestmessage(uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		l = len(*m.F1)
-		n += 1 + l + sovTestmessage(uint64(l))
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			l = len(s)
+			n += 1 + l + sovTestmessage(uint64(l))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -824,89 +484,62 @@ func sovTestmessage(x uint64) (n int) {
 func sozTestmessage(x uint64) (n int) {
 	return sovTestmessage(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func NewPopulatedGoGoProtobufTestMessage1(r randyTestmessage, easy bool) *GoGoProtobufTestMessage1 {
-	this := &GoGoProtobufTestMessage1{}
-	v1 := r.Int31()
-	if r.Intn(2) == 0 {
-		v1 *= -1
+func NewPopulatedSmallMessage(r randyTestmessage, easy bool) *SmallMessage {
+	this := &SmallMessage{}
+	if r.Intn(10) != 0 {
+		v1 := r.Intn(10)
+		this.Values = make([]string, v1)
+		for i := 0; i < v1; i++ {
+			this.Values[i] = randStringTestmessage(r)
+		}
 	}
-	this.F0 = &v1
-	v2 := randStringTestmessage(r)
-	this.F1 = &v2
-	v3 := r.Float32()
-	if r.Intn(2) == 0 {
-		v3 *= -1
-	}
-	this.F2 = &v3
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 4)
+		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 2)
 	}
 	return this
 }
 
-func NewPopulatedGoGoProtobufTestMessage2(r randyTestmessage, easy bool) *GoGoProtobufTestMessage2 {
-	this := &GoGoProtobufTestMessage2{}
-	v4 := r.Int31()
-	if r.Intn(2) == 0 {
-		v4 *= -1
+func NewPopulatedMediumMessage(r randyTestmessage, easy bool) *MediumMessage {
+	this := &MediumMessage{}
+	if r.Intn(10) != 0 {
+		v2 := r.Intn(10)
+		this.Values = make([]string, v2)
+		for i := 0; i < v2; i++ {
+			this.Values[i] = randStringTestmessage(r)
+		}
 	}
-	this.F0 = &v4
-	v5 := randStringTestmessage(r)
-	this.F1 = &v5
-	v6 := r.Float32()
-	if r.Intn(2) == 0 {
-		v6 *= -1
-	}
-	this.F2 = &v6
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 4)
+		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 2)
 	}
 	return this
 }
 
-func NewPopulatedGoGoProtobufTestMessage3(r randyTestmessage, easy bool) *GoGoProtobufTestMessage3 {
-	this := &GoGoProtobufTestMessage3{}
-	v7 := r.Int31()
-	if r.Intn(2) == 0 {
-		v7 *= -1
+func NewPopulatedBigMessage(r randyTestmessage, easy bool) *BigMessage {
+	this := &BigMessage{}
+	if r.Intn(10) != 0 {
+		v3 := r.Intn(10)
+		this.Values = make([]string, v3)
+		for i := 0; i < v3; i++ {
+			this.Values[i] = randStringTestmessage(r)
+		}
 	}
-	this.F0 = &v7
-	v8 := randStringTestmessage(r)
-	this.F1 = &v8
-	v9 := randStringTestmessage(r)
-	this.F2 = &v9
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 4)
+		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 2)
 	}
 	return this
 }
 
-func NewPopulatedGoGoProtobufTestMessage4(r randyTestmessage, easy bool) *GoGoProtobufTestMessage4 {
-	this := &GoGoProtobufTestMessage4{}
-	v10 := r.Int31()
-	if r.Intn(2) == 0 {
-		v10 *= -1
+func NewPopulatedLargeMessage(r randyTestmessage, easy bool) *LargeMessage {
+	this := &LargeMessage{}
+	if r.Intn(10) != 0 {
+		v4 := r.Intn(10)
+		this.Values = make([]string, v4)
+		for i := 0; i < v4; i++ {
+			this.Values[i] = randStringTestmessage(r)
+		}
 	}
-	this.F0 = &v10
-	v11 := randStringTestmessage(r)
-	this.F1 = &v11
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 3)
-	}
-	return this
-}
-
-func NewPopulatedGoGoProtobufTestMessage5(r randyTestmessage, easy bool) *GoGoProtobufTestMessage5 {
-	this := &GoGoProtobufTestMessage5{}
-	v12 := r.Int31()
-	if r.Intn(2) == 0 {
-		v12 *= -1
-	}
-	this.F0 = &v12
-	v13 := randStringTestmessage(r)
-	this.F1 = &v13
-	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 3)
+		this.XXX_unrecognized = randUnrecognizedTestmessage(r, 2)
 	}
 	return this
 }
@@ -928,9 +561,9 @@ func randUTF8RuneTestmessage(r randyTestmessage) rune {
 	return res
 }
 func randStringTestmessage(r randyTestmessage) string {
-	v14 := r.Intn(100)
-	tmps := make([]rune, v14)
-	for i := 0; i < v14; i++ {
+	v5 := r.Intn(100)
+	tmps := make([]rune, v5)
+	for i := 0; i < v5; i++ {
 		tmps[i] = randUTF8RuneTestmessage(r)
 	}
 	return string(tmps)
@@ -952,11 +585,11 @@ func randFieldTestmessage(data []byte, r randyTestmessage, fieldNumber int, wire
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateTestmessage(data, uint64(key))
-		v15 := r.Int63()
+		v6 := r.Int63()
 		if r.Intn(2) == 0 {
-			v15 *= -1
+			v6 *= -1
 		}
-		data = encodeVarintPopulateTestmessage(data, uint64(v15))
+		data = encodeVarintPopulateTestmessage(data, uint64(v6))
 	case 1:
 		data = encodeVarintPopulateTestmessage(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -981,7 +614,7 @@ func encodeVarintPopulateTestmessage(data []byte, v uint64) []byte {
 	data = append(data, uint8(v))
 	return data
 }
-func (m *GoGoProtobufTestMessage1) Marshal() (data []byte, err error) {
+func (m *SmallMessage) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -991,33 +624,32 @@ func (m *GoGoProtobufTestMessage1) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *GoGoProtobufTestMessage1) MarshalTo(data []byte) (n int, err error) {
+func (m *SmallMessage) MarshalTo(data []byte) (n int, err error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if m.F0 != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(len(*m.F1)))
-		i += copy(data[i:], *m.F1)
-	}
-	if m.F2 != nil {
-		data[i] = 0x1d
-		i++
-		i = encodeFixed32Testmessage(data, i, uint32(math2.Float32bits(*m.F2)))
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			data[i] = 0xa
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				data[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			data[i] = uint8(l)
+			i++
+			i += copy(data[i:], s)
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
-func (m *GoGoProtobufTestMessage2) Marshal() (data []byte, err error) {
+func (m *MediumMessage) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -1027,33 +659,32 @@ func (m *GoGoProtobufTestMessage2) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *GoGoProtobufTestMessage2) MarshalTo(data []byte) (n int, err error) {
+func (m *MediumMessage) MarshalTo(data []byte) (n int, err error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if m.F0 != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(len(*m.F1)))
-		i += copy(data[i:], *m.F1)
-	}
-	if m.F2 != nil {
-		data[i] = 0x1d
-		i++
-		i = encodeFixed32Testmessage(data, i, uint32(math2.Float32bits(*m.F2)))
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			data[i] = 0xa
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				data[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			data[i] = uint8(l)
+			i++
+			i += copy(data[i:], s)
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
-func (m *GoGoProtobufTestMessage3) Marshal() (data []byte, err error) {
+func (m *BigMessage) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -1063,34 +694,32 @@ func (m *GoGoProtobufTestMessage3) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *GoGoProtobufTestMessage3) MarshalTo(data []byte) (n int, err error) {
+func (m *BigMessage) MarshalTo(data []byte) (n int, err error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if m.F0 != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(len(*m.F1)))
-		i += copy(data[i:], *m.F1)
-	}
-	if m.F2 != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(len(*m.F2)))
-		i += copy(data[i:], *m.F2)
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			data[i] = 0xa
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				data[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			data[i] = uint8(l)
+			i++
+			i += copy(data[i:], s)
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
 	return i, nil
 }
-func (m *GoGoProtobufTestMessage4) Marshal() (data []byte, err error) {
+func (m *LargeMessage) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -1100,52 +729,25 @@ func (m *GoGoProtobufTestMessage4) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *GoGoProtobufTestMessage4) MarshalTo(data []byte) (n int, err error) {
+func (m *LargeMessage) MarshalTo(data []byte) (n int, err error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if m.F0 != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(len(*m.F1)))
-		i += copy(data[i:], *m.F1)
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(data[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-func (m *GoGoProtobufTestMessage5) Marshal() (data []byte, err error) {
-	size := m.Size()
-	data = make([]byte, size)
-	n, err := m.MarshalTo(data)
-	if err != nil {
-		return nil, err
-	}
-	return data[:n], nil
-}
-
-func (m *GoGoProtobufTestMessage5) MarshalTo(data []byte) (n int, err error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.F0 != nil {
-		data[i] = 0x8
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(uint32(*m.F0)))
-	}
-	if m.F1 != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintTestmessage(data, i, uint64(len(*m.F1)))
-		i += copy(data[i:], *m.F1)
+	if len(m.Values) > 0 {
+		for _, s := range m.Values {
+			data[i] = 0xa
+			i++
+			l = len(s)
+			for l >= 1<<7 {
+				data[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
+			}
+			data[i] = uint8(l)
+			i++
+			i += copy(data[i:], s)
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -1179,39 +781,32 @@ func encodeVarintTestmessage(data []byte, offset int, v uint64) int {
 	data[offset] = uint8(v)
 	return offset + 1
 }
-func (this *GoGoProtobufTestMessage1) GoString() string {
+func (this *SmallMessage) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&testmessage.GoGoProtobufTestMessage1{` + `F0:` + valueToGoStringTestmessage(this.F0, "int32"), `F1:` + valueToGoStringTestmessage(this.F1, "string"), `F2:` + valueToGoStringTestmessage(this.F2, "float32"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&testmessage.SmallMessage{` + `Values:` + fmt1.Sprintf("%#v", this.Values), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
-func (this *GoGoProtobufTestMessage2) GoString() string {
+func (this *MediumMessage) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&testmessage.GoGoProtobufTestMessage2{` + `F0:` + valueToGoStringTestmessage(this.F0, "int32"), `F1:` + valueToGoStringTestmessage(this.F1, "string"), `F2:` + valueToGoStringTestmessage(this.F2, "float32"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&testmessage.MediumMessage{` + `Values:` + fmt1.Sprintf("%#v", this.Values), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
-func (this *GoGoProtobufTestMessage3) GoString() string {
+func (this *BigMessage) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&testmessage.GoGoProtobufTestMessage3{` + `F0:` + valueToGoStringTestmessage(this.F0, "int32"), `F1:` + valueToGoStringTestmessage(this.F1, "string"), `F2:` + valueToGoStringTestmessage(this.F2, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&testmessage.BigMessage{` + `Values:` + fmt1.Sprintf("%#v", this.Values), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
-func (this *GoGoProtobufTestMessage4) GoString() string {
+func (this *LargeMessage) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&testmessage.GoGoProtobufTestMessage4{` + `F0:` + valueToGoStringTestmessage(this.F0, "int32"), `F1:` + valueToGoStringTestmessage(this.F1, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
-	return s
-}
-func (this *GoGoProtobufTestMessage5) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings1.Join([]string{`&testmessage.GoGoProtobufTestMessage5{` + `F0:` + valueToGoStringTestmessage(this.F0, "int32"), `F1:` + valueToGoStringTestmessage(this.F1, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&testmessage.LargeMessage{` + `Values:` + fmt1.Sprintf("%#v", this.Values), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
 func valueToGoStringTestmessage(v interface{}, typ string) string {
@@ -1239,7 +834,7 @@ func extensionToGoStringTestmessage(e map[int32]code_google_com_p_gogoprotobuf_p
 	s += strings1.Join(ss, ",") + "}"
 	return s
 }
-func (this *GoGoProtobufTestMessage1) VerboseEqual(that interface{}) error {
+func (this *SmallMessage) VerboseEqual(that interface{}) error {
 	if that == nil {
 		if this == nil {
 			return nil
@@ -1247,51 +842,32 @@ func (this *GoGoProtobufTestMessage1) VerboseEqual(that interface{}) error {
 		return fmt2.Errorf("that == nil && this != nil")
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage1)
+	that1, ok := that.(*SmallMessage)
 	if !ok {
-		return fmt2.Errorf("that is not of type *GoGoProtobufTestMessage1")
+		return fmt2.Errorf("that is not of type *SmallMessage")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage1 but is nil && this != nil")
+		return fmt2.Errorf("that is type *SmallMessage but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage1but is not nil && this == nil")
+		return fmt2.Errorf("that is type *SmallMessagebut is not nil && this == nil")
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", *this.F0, *that1.F0)
-		}
-	} else if this.F0 != nil {
-		return fmt2.Errorf("this.F0 == nil && that.F0 != nil")
-	} else if that1.F0 != nil {
-		return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", this.F0, that1.F0)
+	if len(this.Values) != len(that1.Values) {
+		return fmt2.Errorf("Values this(%v) Not Equal that(%v)", len(this.Values), len(that1.Values))
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", *this.F1, *that1.F1)
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
+			return fmt2.Errorf("Values this[%v](%v) Not Equal that[%v](%v)", i, this.Values[i], i, that1.Values[i])
 		}
-	} else if this.F1 != nil {
-		return fmt2.Errorf("this.F1 == nil && that.F1 != nil")
-	} else if that1.F1 != nil {
-		return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", this.F1, that1.F1)
-	}
-	if this.F2 != nil && that1.F2 != nil {
-		if *this.F2 != *that1.F2 {
-			return fmt2.Errorf("F2 this(%v) Not Equal that(%v)", *this.F2, *that1.F2)
-		}
-	} else if this.F2 != nil {
-		return fmt2.Errorf("this.F2 == nil && that.F2 != nil")
-	} else if that1.F2 != nil {
-		return fmt2.Errorf("F2 this(%v) Not Equal that(%v)", this.F2, that1.F2)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
-func (this *GoGoProtobufTestMessage1) Equal(that interface{}) bool {
+func (this *SmallMessage) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
 			return true
@@ -1299,7 +875,7 @@ func (this *GoGoProtobufTestMessage1) Equal(that interface{}) bool {
 		return false
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage1)
+	that1, ok := that.(*SmallMessage)
 	if !ok {
 		return false
 	}
@@ -1311,39 +887,20 @@ func (this *GoGoProtobufTestMessage1) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return false
-		}
-	} else if this.F0 != nil {
-		return false
-	} else if that1.F0 != nil {
+	if len(this.Values) != len(that1.Values) {
 		return false
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
 			return false
 		}
-	} else if this.F1 != nil {
-		return false
-	} else if that1.F1 != nil {
-		return false
-	}
-	if this.F2 != nil && that1.F2 != nil {
-		if *this.F2 != *that1.F2 {
-			return false
-		}
-	} else if this.F2 != nil {
-		return false
-	} else if that1.F2 != nil {
-		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
 	}
 	return true
 }
-func (this *GoGoProtobufTestMessage2) VerboseEqual(that interface{}) error {
+func (this *MediumMessage) VerboseEqual(that interface{}) error {
 	if that == nil {
 		if this == nil {
 			return nil
@@ -1351,51 +908,32 @@ func (this *GoGoProtobufTestMessage2) VerboseEqual(that interface{}) error {
 		return fmt2.Errorf("that == nil && this != nil")
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage2)
+	that1, ok := that.(*MediumMessage)
 	if !ok {
-		return fmt2.Errorf("that is not of type *GoGoProtobufTestMessage2")
+		return fmt2.Errorf("that is not of type *MediumMessage")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage2 but is nil && this != nil")
+		return fmt2.Errorf("that is type *MediumMessage but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage2but is not nil && this == nil")
+		return fmt2.Errorf("that is type *MediumMessagebut is not nil && this == nil")
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", *this.F0, *that1.F0)
-		}
-	} else if this.F0 != nil {
-		return fmt2.Errorf("this.F0 == nil && that.F0 != nil")
-	} else if that1.F0 != nil {
-		return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", this.F0, that1.F0)
+	if len(this.Values) != len(that1.Values) {
+		return fmt2.Errorf("Values this(%v) Not Equal that(%v)", len(this.Values), len(that1.Values))
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", *this.F1, *that1.F1)
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
+			return fmt2.Errorf("Values this[%v](%v) Not Equal that[%v](%v)", i, this.Values[i], i, that1.Values[i])
 		}
-	} else if this.F1 != nil {
-		return fmt2.Errorf("this.F1 == nil && that.F1 != nil")
-	} else if that1.F1 != nil {
-		return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", this.F1, that1.F1)
-	}
-	if this.F2 != nil && that1.F2 != nil {
-		if *this.F2 != *that1.F2 {
-			return fmt2.Errorf("F2 this(%v) Not Equal that(%v)", *this.F2, *that1.F2)
-		}
-	} else if this.F2 != nil {
-		return fmt2.Errorf("this.F2 == nil && that.F2 != nil")
-	} else if that1.F2 != nil {
-		return fmt2.Errorf("F2 this(%v) Not Equal that(%v)", this.F2, that1.F2)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
-func (this *GoGoProtobufTestMessage2) Equal(that interface{}) bool {
+func (this *MediumMessage) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
 			return true
@@ -1403,7 +941,7 @@ func (this *GoGoProtobufTestMessage2) Equal(that interface{}) bool {
 		return false
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage2)
+	that1, ok := that.(*MediumMessage)
 	if !ok {
 		return false
 	}
@@ -1415,39 +953,20 @@ func (this *GoGoProtobufTestMessage2) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return false
-		}
-	} else if this.F0 != nil {
-		return false
-	} else if that1.F0 != nil {
+	if len(this.Values) != len(that1.Values) {
 		return false
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
 			return false
 		}
-	} else if this.F1 != nil {
-		return false
-	} else if that1.F1 != nil {
-		return false
-	}
-	if this.F2 != nil && that1.F2 != nil {
-		if *this.F2 != *that1.F2 {
-			return false
-		}
-	} else if this.F2 != nil {
-		return false
-	} else if that1.F2 != nil {
-		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
 	}
 	return true
 }
-func (this *GoGoProtobufTestMessage3) VerboseEqual(that interface{}) error {
+func (this *BigMessage) VerboseEqual(that interface{}) error {
 	if that == nil {
 		if this == nil {
 			return nil
@@ -1455,51 +974,32 @@ func (this *GoGoProtobufTestMessage3) VerboseEqual(that interface{}) error {
 		return fmt2.Errorf("that == nil && this != nil")
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage3)
+	that1, ok := that.(*BigMessage)
 	if !ok {
-		return fmt2.Errorf("that is not of type *GoGoProtobufTestMessage3")
+		return fmt2.Errorf("that is not of type *BigMessage")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage3 but is nil && this != nil")
+		return fmt2.Errorf("that is type *BigMessage but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage3but is not nil && this == nil")
+		return fmt2.Errorf("that is type *BigMessagebut is not nil && this == nil")
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", *this.F0, *that1.F0)
-		}
-	} else if this.F0 != nil {
-		return fmt2.Errorf("this.F0 == nil && that.F0 != nil")
-	} else if that1.F0 != nil {
-		return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", this.F0, that1.F0)
+	if len(this.Values) != len(that1.Values) {
+		return fmt2.Errorf("Values this(%v) Not Equal that(%v)", len(this.Values), len(that1.Values))
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", *this.F1, *that1.F1)
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
+			return fmt2.Errorf("Values this[%v](%v) Not Equal that[%v](%v)", i, this.Values[i], i, that1.Values[i])
 		}
-	} else if this.F1 != nil {
-		return fmt2.Errorf("this.F1 == nil && that.F1 != nil")
-	} else if that1.F1 != nil {
-		return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", this.F1, that1.F1)
-	}
-	if this.F2 != nil && that1.F2 != nil {
-		if *this.F2 != *that1.F2 {
-			return fmt2.Errorf("F2 this(%v) Not Equal that(%v)", *this.F2, *that1.F2)
-		}
-	} else if this.F2 != nil {
-		return fmt2.Errorf("this.F2 == nil && that.F2 != nil")
-	} else if that1.F2 != nil {
-		return fmt2.Errorf("F2 this(%v) Not Equal that(%v)", this.F2, that1.F2)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
-func (this *GoGoProtobufTestMessage3) Equal(that interface{}) bool {
+func (this *BigMessage) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
 			return true
@@ -1507,7 +1007,7 @@ func (this *GoGoProtobufTestMessage3) Equal(that interface{}) bool {
 		return false
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage3)
+	that1, ok := that.(*BigMessage)
 	if !ok {
 		return false
 	}
@@ -1519,39 +1019,20 @@ func (this *GoGoProtobufTestMessage3) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return false
-		}
-	} else if this.F0 != nil {
-		return false
-	} else if that1.F0 != nil {
+	if len(this.Values) != len(that1.Values) {
 		return false
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
 			return false
 		}
-	} else if this.F1 != nil {
-		return false
-	} else if that1.F1 != nil {
-		return false
-	}
-	if this.F2 != nil && that1.F2 != nil {
-		if *this.F2 != *that1.F2 {
-			return false
-		}
-	} else if this.F2 != nil {
-		return false
-	} else if that1.F2 != nil {
-		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
 	}
 	return true
 }
-func (this *GoGoProtobufTestMessage4) VerboseEqual(that interface{}) error {
+func (this *LargeMessage) VerboseEqual(that interface{}) error {
 	if that == nil {
 		if this == nil {
 			return nil
@@ -1559,42 +1040,32 @@ func (this *GoGoProtobufTestMessage4) VerboseEqual(that interface{}) error {
 		return fmt2.Errorf("that == nil && this != nil")
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage4)
+	that1, ok := that.(*LargeMessage)
 	if !ok {
-		return fmt2.Errorf("that is not of type *GoGoProtobufTestMessage4")
+		return fmt2.Errorf("that is not of type *LargeMessage")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage4 but is nil && this != nil")
+		return fmt2.Errorf("that is type *LargeMessage but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage4but is not nil && this == nil")
+		return fmt2.Errorf("that is type *LargeMessagebut is not nil && this == nil")
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", *this.F0, *that1.F0)
-		}
-	} else if this.F0 != nil {
-		return fmt2.Errorf("this.F0 == nil && that.F0 != nil")
-	} else if that1.F0 != nil {
-		return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", this.F0, that1.F0)
+	if len(this.Values) != len(that1.Values) {
+		return fmt2.Errorf("Values this(%v) Not Equal that(%v)", len(this.Values), len(that1.Values))
 	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", *this.F1, *that1.F1)
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
+			return fmt2.Errorf("Values this[%v](%v) Not Equal that[%v](%v)", i, this.Values[i], i, that1.Values[i])
 		}
-	} else if this.F1 != nil {
-		return fmt2.Errorf("this.F1 == nil && that.F1 != nil")
-	} else if that1.F1 != nil {
-		return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", this.F1, that1.F1)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
-func (this *GoGoProtobufTestMessage4) Equal(that interface{}) bool {
+func (this *LargeMessage) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
 			return true
@@ -1602,7 +1073,7 @@ func (this *GoGoProtobufTestMessage4) Equal(that interface{}) bool {
 		return false
 	}
 
-	that1, ok := that.(*GoGoProtobufTestMessage4)
+	that1, ok := that.(*LargeMessage)
 	if !ok {
 		return false
 	}
@@ -1614,109 +1085,13 @@ func (this *GoGoProtobufTestMessage4) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
+	if len(this.Values) != len(that1.Values) {
+		return false
+	}
+	for i := range this.Values {
+		if this.Values[i] != that1.Values[i] {
 			return false
 		}
-	} else if this.F0 != nil {
-		return false
-	} else if that1.F0 != nil {
-		return false
-	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return false
-		}
-	} else if this.F1 != nil {
-		return false
-	} else if that1.F1 != nil {
-		return false
-	}
-	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-		return false
-	}
-	return true
-}
-func (this *GoGoProtobufTestMessage5) VerboseEqual(that interface{}) error {
-	if that == nil {
-		if this == nil {
-			return nil
-		}
-		return fmt2.Errorf("that == nil && this != nil")
-	}
-
-	that1, ok := that.(*GoGoProtobufTestMessage5)
-	if !ok {
-		return fmt2.Errorf("that is not of type *GoGoProtobufTestMessage5")
-	}
-	if that1 == nil {
-		if this == nil {
-			return nil
-		}
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage5 but is nil && this != nil")
-	} else if this == nil {
-		return fmt2.Errorf("that is type *GoGoProtobufTestMessage5but is not nil && this == nil")
-	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", *this.F0, *that1.F0)
-		}
-	} else if this.F0 != nil {
-		return fmt2.Errorf("this.F0 == nil && that.F0 != nil")
-	} else if that1.F0 != nil {
-		return fmt2.Errorf("F0 this(%v) Not Equal that(%v)", this.F0, that1.F0)
-	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", *this.F1, *that1.F1)
-		}
-	} else if this.F1 != nil {
-		return fmt2.Errorf("this.F1 == nil && that.F1 != nil")
-	} else if that1.F1 != nil {
-		return fmt2.Errorf("F1 this(%v) Not Equal that(%v)", this.F1, that1.F1)
-	}
-	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
-	}
-	return nil
-}
-func (this *GoGoProtobufTestMessage5) Equal(that interface{}) bool {
-	if that == nil {
-		if this == nil {
-			return true
-		}
-		return false
-	}
-
-	that1, ok := that.(*GoGoProtobufTestMessage5)
-	if !ok {
-		return false
-	}
-	if that1 == nil {
-		if this == nil {
-			return true
-		}
-		return false
-	} else if this == nil {
-		return false
-	}
-	if this.F0 != nil && that1.F0 != nil {
-		if *this.F0 != *that1.F0 {
-			return false
-		}
-	} else if this.F0 != nil {
-		return false
-	} else if that1.F0 != nil {
-		return false
-	}
-	if this.F1 != nil && that1.F1 != nil {
-		if *this.F1 != *that1.F1 {
-			return false
-		}
-	} else if this.F1 != nil {
-		return false
-	} else if that1.F1 != nil {
-		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false

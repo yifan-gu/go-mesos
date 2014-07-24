@@ -12,43 +12,80 @@ import (
 	"github.com/yifan-gu/go-mesos/upid"
 )
 
-const messageTypes = 4
+var (
+	usedport         = 5050
+	receivedMessages = 0
+	done             = make(chan bool, 1)
+	benchMessageCnt  = 0
+)
 
-func generateMessages(n int) []proto.Message {
-	queue := make([]proto.Message, n*4)
-	for i := 0; i < n*messageTypes; i = i + messageTypes {
-		queue[i] = &testmessage.GoGoProtobufTestMessage1{
-			F0: proto.Int32(int32(rand.Int())),
-			F1: proto.String(fmt.Sprintf("%10d", rand.Int())),
-			F2: proto.Float32(rand.Float32()),
-		}
-		queue[i+1] = &testmessage.GoGoProtobufTestMessage2{
-			F0: proto.Int32(int32(rand.Int())),
-			F1: proto.String(fmt.Sprintf("%10d", rand.Int())),
-			F2: proto.Float32(rand.Float32()),
-		}
-		queue[i+2] = &testmessage.GoGoProtobufTestMessage3{
-			F0: proto.Int32(int32(rand.Int())),
-			F1: proto.String(fmt.Sprintf("%10d", rand.Int())),
-			F2: proto.String(fmt.Sprintf("%10d", rand.Int())),
-		}
-		queue[i+3] = &testmessage.GoGoProtobufTestMessage4{
-			F0: proto.Int32(int32(rand.Int())),
-			F1: proto.String(fmt.Sprintf("%10d", rand.Int())),
-		}
+func noopHandler(*upid.UPID, proto.Message) {
+	receivedMessages++
+	if receivedMessages >= benchMessageCnt {
+		done <- true
 	}
-	// Shuffle the messages.
-	for i := range queue {
+}
+
+func getNewPort() int {
+	usedport++
+	return usedport
+}
+
+func shuffleMessages(queue *[]proto.Message) {
+	for i := range *queue {
 		index := rand.Intn(i + 1)
-		queue[i], queue[index] = queue[index], queue[i]
+		(*queue)[i], (*queue)[index] = (*queue)[index], (*queue)[i]
 	}
+}
+
+func generateSmallMessages(n int) []proto.Message {
+	queue := make([]proto.Message, n)
+	for i := range queue {
+		queue[i] = testmessage.GenerateSmallMessage()
+	}
+	return queue
+}
+
+func generateMediumMessages(n int) []proto.Message {
+	queue := make([]proto.Message, n)
+	for i := range queue {
+		queue[i] = testmessage.GenerateMediumMessage()
+	}
+	return queue
+}
+
+func generateBigMessages(n int) []proto.Message {
+	queue := make([]proto.Message, n)
+	for i := range queue {
+		queue[i] = testmessage.GenerateBigMessage()
+	}
+	return queue
+}
+
+func generateLargeMessages(n int) []proto.Message {
+	queue := make([]proto.Message, n)
+	for i := range queue {
+		queue[i] = testmessage.GenerateLargeMessage()
+	}
+	return queue
+}
+
+func generateMixedMessages(n int) []proto.Message {
+	queue := make([]proto.Message, n*4)
+	for i := 0; i < n*4; i = i + 4 {
+		queue[i] = testmessage.GenerateSmallMessage()
+		queue[i+1] = testmessage.GenerateMediumMessage()
+		queue[i+2] = testmessage.GenerateBigMessage()
+		queue[i+3] = testmessage.GenerateLargeMessage()
+	}
+	shuffleMessages(&queue)
 	return queue
 }
 
 func installMessages(t *testing.T, m Messenger, queue *[]proto.Message, counts *[]int, done chan struct{}) {
 	testCounts := func(counts []int, done chan struct{}) {
 		for i := range counts {
-			if counts[i] != cap(*queue)/messageTypes {
+			if counts[i] != cap(*queue)/4 {
 				return
 			}
 		}
@@ -74,18 +111,18 @@ func installMessages(t *testing.T, m Messenger, queue *[]proto.Message, counts *
 		(*counts)[3]++
 		testCounts(*counts, done)
 	}
-	assert.NoError(t, m.Install(hander1, &testmessage.GoGoProtobufTestMessage1{}))
-	assert.NoError(t, m.Install(hander2, &testmessage.GoGoProtobufTestMessage2{}))
-	assert.NoError(t, m.Install(hander3, &testmessage.GoGoProtobufTestMessage3{}))
-	assert.NoError(t, m.Install(hander4, &testmessage.GoGoProtobufTestMessage4{}))
+	assert.NoError(t, m.Install(hander1, &testmessage.SmallMessage{}))
+	assert.NoError(t, m.Install(hander2, &testmessage.MediumMessage{}))
+	assert.NoError(t, m.Install(hander3, &testmessage.BigMessage{}))
+	assert.NoError(t, m.Install(hander4, &testmessage.LargeMessage{}))
 }
 
 func TestMessengerFailToInstall(t *testing.T) {
 	m := NewMesosMessenger(&upid.UPID{ID: "mesos"})
 	handler := func(from *upid.UPID, pbMsg proto.Message) {}
 	assert.NotNil(t, m)
-	assert.NoError(t, m.Install(handler, &testmessage.GoGoProtobufTestMessage1{}))
-	assert.Error(t, m.Install(handler, &testmessage.GoGoProtobufTestMessage1{}))
+	assert.NoError(t, m.Install(handler, &testmessage.SmallMessage{}))
+	assert.Error(t, m.Install(handler, &testmessage.SmallMessage{}))
 }
 
 func TestMessengerFailToStart(t *testing.T) {
@@ -96,25 +133,25 @@ func TestMessengerFailToStart(t *testing.T) {
 }
 
 func TestMessengerFailToSend(t *testing.T) {
-	upid, err := upid.Parse("mesos1@localhost:5051")
+	upid, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(t, err)
 	m := NewMesosMessenger(upid)
 	assert.NoError(t, m.Start())
-	assert.Error(t, m.Send(upid, &testmessage.GoGoProtobufTestMessage1{}))
+	assert.Error(t, m.Send(upid, &testmessage.SmallMessage{}))
 }
 
 func TestMessenger(t *testing.T) {
-	messages := generateMessages(1000)
+	messages := generateMixedMessages(1000)
 
-	upid1, err := upid.Parse("mesos1@localhost:5052")
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(t, err)
-	upid2, err := upid.Parse("mesos2@localhost:5053")
+	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
 	assert.NoError(t, err)
 
 	m1 := NewMesosMessenger(upid1)
 	m2 := NewMesosMessenger(upid2)
 
-	counts := make([]int, messageTypes)
+	counts := make([]int, 4)
 	msgQueue := make([]proto.Message, 0, len(messages))
 	done := make(chan struct{})
 	installMessages(t, m2, &msgQueue, &counts, done)
@@ -138,4 +175,137 @@ func TestMessenger(t *testing.T) {
 		assert.Equal(t, 1000, counts[i])
 	}
 	assert.Equal(t, messages, msgQueue)
+}
+
+func BenchmarkMessengerSendRecvSmallMessage(b *testing.B) {
+	messages := generateSmallMessages(1000)
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	m2 := NewMesosMessenger(upid2)
+	assert.NoError(b, m1.Start())
+	assert.NoError(b, m2.Start())
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.SmallMessage{}))
+
+	receivedMessages = 0
+	benchMessageCnt = b.N
+	b.ResetTimer()
+
+	go func() {
+		for i := 0; i < b.N; i++ {
+			m1.Send(upid2, messages[i%1000])
+		}
+	}()
+	<-done
+}
+
+func BenchmarkMessengerSendRecvMediumMessage(b *testing.B) {
+	messages := generateMediumMessages(1000)
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	m2 := NewMesosMessenger(upid2)
+	assert.NoError(b, m1.Start())
+	assert.NoError(b, m2.Start())
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.MediumMessage{}))
+
+	receivedMessages = 0
+	benchMessageCnt = b.N
+	b.ResetTimer()
+
+	go func() {
+		for i := 0; i < b.N; i++ {
+			m1.Send(upid2, messages[i%1000])
+		}
+	}()
+	<-done
+}
+
+func BenchmarkMessengerSendRecvBigMessage(b *testing.B) {
+	messages := generateBigMessages(1000)
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	m2 := NewMesosMessenger(upid2)
+	assert.NoError(b, m1.Start())
+	assert.NoError(b, m2.Start())
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.BigMessage{}))
+
+	receivedMessages = 0
+	benchMessageCnt = b.N
+	b.ResetTimer()
+
+	go func() {
+		for i := 0; i < b.N; i++ {
+			m1.Send(upid2, messages[i%1000])
+		}
+	}()
+	<-done
+}
+
+func BenchmarkMessengerSendRecvLargeMessage(b *testing.B) {
+	messages := generateLargeMessages(1000)
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	m2 := NewMesosMessenger(upid2)
+	assert.NoError(b, m1.Start())
+	assert.NoError(b, m2.Start())
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.LargeMessage{}))
+
+	receivedMessages = 0
+	benchMessageCnt = b.N
+	b.ResetTimer()
+
+	go func() {
+		for i := 0; i < b.N; i++ {
+			m1.Send(upid2, messages[i%1000])
+		}
+	}()
+	<-done
+}
+
+func BenchmarkMessengerSendRecvMixedMessage(b *testing.B) {
+	messages := generateMixedMessages(1000)
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	m2 := NewMesosMessenger(upid2)
+	assert.NoError(b, m1.Start())
+	assert.NoError(b, m2.Start())
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.SmallMessage{}))
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.MediumMessage{}))
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.BigMessage{}))
+	assert.NoError(b, m2.Install(noopHandler, &testmessage.LargeMessage{}))
+
+	receivedMessages = 0
+	benchMessageCnt = b.N
+	b.ResetTimer()
+
+	go func() {
+		for i := 0; i < b.N; i++ {
+			m1.Send(upid2, messages[i%1000])
+		}
+	}()
+	<-done
 }
