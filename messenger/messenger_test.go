@@ -3,6 +3,9 @@ package messenger
 import (
 	"fmt"
 	"math/rand"
+	"os/exec"
+	"path"
+	"runtime"
 	"testing"
 	"time"
 
@@ -117,6 +120,16 @@ func installMessages(t *testing.T, m Messenger, queue *[]proto.Message, counts *
 	assert.NoError(t, m.Install(hander4, &testmessage.LargeMessage{}))
 }
 
+func runBlackHoleServer(b *testing.B) *exec.Cmd {
+	_, file, _, _ := runtime.Caller(1)
+	blackholeServerPath := path.Join(path.Dir(file), "/blackhole_server/main.go")
+	cmd := exec.Command("go", "run", blackholeServerPath)
+	if err := cmd.Start(); err != nil {
+		b.Fatal("Cannot run server:", err)
+	}
+	return cmd
+}
+
 func TestMessengerFailToInstall(t *testing.T) {
 	m := NewMesosMessenger(&upid.UPID{ID: "mesos"})
 	handler := func(from *upid.UPID, pbMsg proto.Message) {}
@@ -177,6 +190,106 @@ func TestMessenger(t *testing.T) {
 	assert.Equal(t, messages, msgQueue)
 }
 
+func BenchmarkMessengerSendSmallMessage(b *testing.B) {
+	messages := generateSmallMessages(1000)
+	cmd := runBlackHoleServer(b)
+	defer cmd.Process.Kill()
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse("blackhole@localhost:8080")
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	assert.NoError(b, m1.Start())
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
+}
+
+func BenchmarkMessengerSendMediumMessage(b *testing.B) {
+	messages := generateMediumMessages(1000)
+	cmd := runBlackHoleServer(b)
+	defer cmd.Process.Kill()
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse("blackhole@localhost:8080")
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	assert.NoError(b, m1.Start())
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
+}
+
+func BenchmarkMessengerSendBigMessage(b *testing.B) {
+	messages := generateBigMessages(1000)
+	cmd := runBlackHoleServer(b)
+	defer cmd.Process.Kill()
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse("blackhole@localhost:8080")
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	assert.NoError(b, m1.Start())
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
+}
+
+func BenchmarkMessengerSendLargeMessage(b *testing.B) {
+	messages := generateLargeMessages(1000)
+	cmd := runBlackHoleServer(b)
+	defer cmd.Process.Kill()
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse("blackhole@localhost:8080")
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	assert.NoError(b, m1.Start())
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
+}
+
+func BenchmarkMessengerSendMixedMessage(b *testing.B) {
+	messages := generateMixedMessages(1000)
+	cmd := runBlackHoleServer(b)
+	defer cmd.Process.Kill()
+
+	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
+	assert.NoError(b, err)
+	upid2, err := upid.Parse("blackhole@localhost:8080")
+	assert.NoError(b, err)
+
+	m1 := NewMesosMessenger(upid1)
+	assert.NoError(b, m1.Start())
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
+}
+
 func BenchmarkMessengerSendRecvSmallMessage(b *testing.B) {
 	messages := generateSmallMessages(1000)
 
@@ -184,8 +297,6 @@ func BenchmarkMessengerSendRecvSmallMessage(b *testing.B) {
 	assert.NoError(b, err)
 	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
-	//upid3, err := upid.Parse(fmt.Sprintf("mesos@localhost:8080"))
-	//assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
 	m2 := NewMesosMessenger(upid2)

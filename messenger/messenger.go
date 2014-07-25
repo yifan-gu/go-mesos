@@ -35,15 +35,15 @@ const (
 )
 
 var (
-	sendThreads   int
-	encodeThreads int
-	decodeThreads int
+	sendRoutines   int
+	encodeRoutines int
+	decodeRoutines int
 )
 
 func init() {
-	flag.IntVar(&sendThreads, "send-threads", 1, "Number of network sending threads")
-	flag.IntVar(&encodeThreads, "encode-threads", 1, "Number of encoding threads")
-	flag.IntVar(&decodeThreads, "decode-threads", 1, "Number of decoding threads")
+	flag.IntVar(&sendRoutines, "send-routines", 1, "Number of network sending routines")
+	flag.IntVar(&encodeRoutines, "encode-routines", 1, "Number of encoding routines")
+	flag.IntVar(&decodeRoutines, "decode-routines", 1, "Number of decoding routines")
 }
 
 // MessageHandler is the callback of the message. When the callback
@@ -111,7 +111,7 @@ func (m *MesosMessenger) Send(upid *upid.UPID, msg proto.Message) error {
 		return fmt.Errorf("Send the message to self")
 	}
 	name := getMessageName(msg)
-	log.Infof("Sending message %v to %v\n", name, upid)
+	log.V(2).Infof("Sending message %v to %v\n", name, upid)
 	m.encodingQueue <- &Message{upid, name, msg, nil}
 	return nil
 }
@@ -132,13 +132,13 @@ func (m *MesosMessenger) Start() error {
 	}
 
 	m.upid = m.tr.UPID()
-	for i := 0; i < sendThreads; i++ {
+	for i := 0; i < sendRoutines; i++ {
 		go m.sendLoop()
 	}
-	for i := 0; i < encodeThreads; i++ {
+	for i := 0; i < encodeRoutines; i++ {
 		go m.encodeLoop()
 	}
-	for i := 0; i < decodeThreads; i++ {
+	for i := 0; i < decodeRoutines; i++ {
 		go m.decodeLoop()
 	}
 	return nil
@@ -197,6 +197,7 @@ func (m *MesosMessenger) decodeLoop() {
 		default:
 		}
 		msg := m.tr.Recv()
+		log.V(2).Infof("Receiving message %v from %v\n", msg.Name, msg.UPID)
 		msg.ProtoMessage = reflect.New(m.installedMessages[msg.Name]).Interface().(proto.Message)
 		if err := proto.Unmarshal(msg.Bytes, msg.ProtoMessage); err != nil {
 			log.Errorf("Failed to unmarshal message %v: %v\n", msg, err)
