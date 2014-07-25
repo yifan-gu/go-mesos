@@ -19,6 +19,7 @@
 package messenger
 
 import (
+	"flag"
 	"fmt"
 	"reflect"
 	"time"
@@ -32,6 +33,18 @@ const (
 	defaultQueueSize = 1024
 	preparePeriod    = time.Second * 1
 )
+
+var (
+	sendThreads   int
+	encodeThreads int
+	decodeThreads int
+)
+
+func init() {
+	flag.IntVar(&sendThreads, "send-threads", 1, "Number of network sending threads")
+	flag.IntVar(&encodeThreads, "encode-threads", 1, "Number of encoding threads")
+	flag.IntVar(&decodeThreads, "decode-threads", 1, "Number of decoding threads")
+}
 
 // MessageHandler is the callback of the message. When the callback
 // is invoked, the sender's upid and the message is passed to the callback.
@@ -49,8 +62,8 @@ type Messenger interface {
 // MesosMessenger is an implementation of the Messenger interface.
 type MesosMessenger struct {
 	upid              *upid.UPID
-	inQueue           chan *Message
-	outQueue          chan *Message
+	encodingQueue     chan *Message
+	sendingQueue      chan *Message
 	installedMessages map[string]reflect.Type
 	installedHandlers map[string]MessageHandler
 	stop              chan struct{}
@@ -61,8 +74,8 @@ type MesosMessenger struct {
 func NewMesosMessenger(upid *upid.UPID) *MesosMessenger {
 	return &MesosMessenger{
 		upid:              upid,
-		inQueue:           make(chan *Message, defaultQueueSize),
-		outQueue:          make(chan *Message, defaultQueueSize),
+		encodingQueue:     make(chan *Message, defaultQueueSize),
+		sendingQueue:      make(chan *Message, defaultQueueSize),
 		installedMessages: make(map[string]reflect.Type),
 		installedHandlers: make(map[string]MessageHandler),
 		stop:              make(chan struct{}),
@@ -99,13 +112,7 @@ func (m *MesosMessenger) Send(upid *upid.UPID, msg proto.Message) error {
 	}
 	name := getMessageName(msg)
 	log.Infof("Sending message %v to %v\n", name, upid)
-	select {
-	case m.outQueue <- &Message{upid, name, msg, nil}:
-	default:
-		log.Warningln("Full")
-		m.outQueue <- &Message{upid, name, msg, nil}
-	}
-
+	m.encodingQueue <- &Message{upid, name, msg, nil}
 	return nil
 }
 
@@ -125,10 +132,15 @@ func (m *MesosMessenger) Start() error {
 	}
 
 	m.upid = m.tr.UPID()
-
-	go m.outgoingLoop()
-	go m.decodingLoop()
-	go m.incomingLoop()
+	for i := 0; i < sendThreads; i++ {
+		go m.sendLoop()
+	}
+	for i := 0; i < encodeThreads; i++ {
+		go m.encodeLoop()
+	}
+	for i := 0; i < decodeThreads; i++ {
+		go m.decodeLoop()
+	}
 	return nil
 }
 
@@ -145,18 +157,29 @@ func (m *MesosMessenger) UPID() *upid.UPID {
 	return m.upid
 }
 
-func (m *MesosMessenger) outgoingLoop() {
+func (m *MesosMessenger) encodeLoop() {
 	for {
 		select {
 		case <-m.stop:
 			return
-		case msg := <-m.outQueue:
+		case msg := <-m.encodingQueue:
 			b, err := proto.Marshal(msg.ProtoMessage)
 			if err != nil {
 				log.Errorf("Failed to send message %v: %v\n", msg, err)
 				continue
 			}
 			msg.Bytes = b
+			m.sendingQueue <- msg
+		}
+	}
+}
+
+func (m *MesosMessenger) sendLoop() {
+	for {
+		select {
+		case <-m.stop:
+			return
+		case msg := <-m.sendingQueue:
 			if err := m.tr.Send(msg); err != nil {
 				log.Errorf("Failed to send message %v: %v\n", msg.Name, err)
 				continue
@@ -165,26 +188,8 @@ func (m *MesosMessenger) outgoingLoop() {
 	}
 }
 
-// From the queue to the callbacks
-func (m *MesosMessenger) decodingLoop() {
-	for {
-		select {
-		case <-m.stop:
-			return
-		case msg := <-m.inQueue:
-			if err := proto.Unmarshal(msg.Bytes, msg.ProtoMessage); err != nil {
-				log.Errorf("Failed to unmarshal message %v: %v\n", msg, err)
-				continue
-			}
-			// TODO(yifan): Catch panic.
-			m.installedHandlers[msg.Name](msg.UPID, msg.ProtoMessage)
-		}
-	}
-}
-
-// Feed the message to decodingLoop. Use a channel as a buffer in case
-// the transporter implementation doesn't provide any buffers.
-func (m *MesosMessenger) incomingLoop() {
+// Since HTTPTransporter.Recv() is already buffered, so we don't need a 'recvLoop' here.
+func (m *MesosMessenger) decodeLoop() {
 	for {
 		select {
 		case <-m.stop:
@@ -193,7 +198,12 @@ func (m *MesosMessenger) incomingLoop() {
 		}
 		msg := m.tr.Recv()
 		msg.ProtoMessage = reflect.New(m.installedMessages[msg.Name]).Interface().(proto.Message)
-		m.inQueue <- msg
+		if err := proto.Unmarshal(msg.Bytes, msg.ProtoMessage); err != nil {
+			log.Errorf("Failed to unmarshal message %v: %v\n", msg, err)
+			continue
+		}
+		// TODO(yifan): Catch panic.
+		m.installedHandlers[msg.Name](msg.UPID, msg.ProtoMessage)
 	}
 }
 

@@ -184,6 +184,8 @@ func BenchmarkMessengerSendRecvSmallMessage(b *testing.B) {
 	assert.NoError(b, err)
 	upid2, err := upid.Parse(fmt.Sprintf("mesos2@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
+	//upid3, err := upid.Parse(fmt.Sprintf("mesos@localhost:8080"))
+	//assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
 	m2 := NewMesosMessenger(upid2)
