@@ -67,7 +67,7 @@ type MesosMessenger struct {
 	installedMessages map[string]reflect.Type
 	installedHandlers map[string]MessageHandler
 	stop              chan struct{}
-	tr                Transporter
+	receiver          Receiver
 }
 
 // NewMesosMessenger creates a new mesos messenger.
@@ -79,7 +79,7 @@ func NewMesosMessenger(upid *upid.UPID) *MesosMessenger {
 		installedMessages: make(map[string]reflect.Type),
 		installedHandlers: make(map[string]MessageHandler),
 		stop:              make(chan struct{}),
-		tr:                NewHTTPTransporter(upid),
+		receiver:          NewHTTPReceiver(upid),
 	}
 }
 
@@ -98,7 +98,7 @@ func (m *MesosMessenger) Install(handler MessageHandler, msg proto.Message) erro
 	}
 	m.installedMessages[name] = mtype.Elem()
 	m.installedHandlers[name] = handler
-	m.tr.Install(name)
+	m.receiver.Install(name)
 	return nil
 }
 
@@ -120,7 +120,7 @@ func (m *MesosMessenger) Send(upid *upid.UPID, msg proto.Message) error {
 func (m *MesosMessenger) Start() error {
 	errChan := make(chan error)
 	go func() {
-		if err := m.tr.Start(); err != nil {
+		if err := m.receiver.Start(); err != nil {
 			errChan <- err
 		}
 	}()
@@ -131,7 +131,7 @@ func (m *MesosMessenger) Start() error {
 	case <-time.After(preparePeriod):
 	}
 
-	m.upid = m.tr.UPID()
+	m.upid = m.receiver.UPID()
 	for i := 0; i < sendRoutines; i++ {
 		go m.sendLoop()
 	}
@@ -146,7 +146,7 @@ func (m *MesosMessenger) Start() error {
 
 // Stop stops the messenger and clean up all the goroutines.
 func (m *MesosMessenger) Stop() {
-	if err := m.tr.Stop(); err != nil {
+	if err := m.receiver.Stop(); err != nil {
 		log.Errorf("Failed to stop the transporter: %v\n", err)
 	}
 	close(m.stop)
@@ -175,12 +175,13 @@ func (m *MesosMessenger) encodeLoop() {
 }
 
 func (m *MesosMessenger) sendLoop() {
+	sender := NewHTTPSender(m.upid)
 	for {
 		select {
 		case <-m.stop:
 			return
 		case msg := <-m.sendingQueue:
-			if err := m.tr.Send(msg); err != nil {
+			if err := sender.Send(msg); err != nil {
 				log.Errorf("Failed to send message %v: %v\n", msg.Name, err)
 				continue
 			}
@@ -196,7 +197,7 @@ func (m *MesosMessenger) decodeLoop() {
 			return
 		default:
 		}
-		msg := m.tr.Recv()
+		msg := m.receiver.Recv()
 		log.V(2).Infof("Receiving message %v from %v\n", msg.Name, msg.UPID)
 		msg.ProtoMessage = reflect.New(m.installedMessages[msg.Name]).Interface().(proto.Message)
 		if err := proto.Unmarshal(msg.Bytes, msg.ProtoMessage); err != nil {
