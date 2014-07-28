@@ -120,12 +120,12 @@ func installMessages(t *testing.T, m Messenger, queue *[]proto.Message, counts *
 	assert.NoError(t, m.Install(hander4, &testmessage.LargeMessage{}))
 }
 
-func runBlackHoleServer(b *testing.B) *exec.Cmd {
+func runTestServer(b *testing.B) *exec.Cmd {
 	_, file, _, _ := runtime.Caller(1)
-	blackholeServerPath := path.Join(path.Dir(file), "/blackhole_server/main.go")
-	cmd := exec.Command("go", "run", blackholeServerPath)
+	testServerPath := path.Join(path.Dir(file), "/testserver/main.go")
+	cmd := exec.Command("go", "run", testServerPath)
 	if err := cmd.Start(); err != nil {
-		b.Fatal("Cannot run server:", err)
+		b.Fatal("Cannot run test server:", err)
 	}
 	return cmd
 }
@@ -192,12 +192,12 @@ func TestMessenger(t *testing.T) {
 
 func BenchmarkMessengerSendSmallMessage(b *testing.B) {
 	messages := generateSmallMessages(1000)
-	cmd := runBlackHoleServer(b)
+	cmd := runTestServer(b)
 	defer cmd.Process.Kill()
 
 	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
-	upid2, err := upid.Parse("blackhole@localhost:8080")
+	upid2, err := upid.Parse("testserver@localhost:8080")
 	assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
@@ -212,12 +212,12 @@ func BenchmarkMessengerSendSmallMessage(b *testing.B) {
 
 func BenchmarkMessengerSendMediumMessage(b *testing.B) {
 	messages := generateMediumMessages(1000)
-	cmd := runBlackHoleServer(b)
+	cmd := runTestServer(b)
 	defer cmd.Process.Kill()
 
 	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
-	upid2, err := upid.Parse("blackhole@localhost:8080")
+	upid2, err := upid.Parse("testserver@localhost:8080")
 	assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
@@ -232,12 +232,12 @@ func BenchmarkMessengerSendMediumMessage(b *testing.B) {
 
 func BenchmarkMessengerSendBigMessage(b *testing.B) {
 	messages := generateBigMessages(1000)
-	cmd := runBlackHoleServer(b)
+	cmd := runTestServer(b)
 	defer cmd.Process.Kill()
 
 	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
-	upid2, err := upid.Parse("blackhole@localhost:8080")
+	upid2, err := upid.Parse("testserver@localhost:8080")
 	assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
@@ -252,12 +252,12 @@ func BenchmarkMessengerSendBigMessage(b *testing.B) {
 
 func BenchmarkMessengerSendLargeMessage(b *testing.B) {
 	messages := generateLargeMessages(1000)
-	cmd := runBlackHoleServer(b)
+	cmd := runTestServer(b)
 	defer cmd.Process.Kill()
 
 	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
-	upid2, err := upid.Parse("blackhole@localhost:8080")
+	upid2, err := upid.Parse("testserver@localhost:8080")
 	assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
@@ -272,12 +272,12 @@ func BenchmarkMessengerSendLargeMessage(b *testing.B) {
 
 func BenchmarkMessengerSendMixedMessage(b *testing.B) {
 	messages := generateMixedMessages(1000)
-	cmd := runBlackHoleServer(b)
+	cmd := runTestServer(b)
 	defer cmd.Process.Kill()
 
 	upid1, err := upid.Parse(fmt.Sprintf("mesos1@localhost:%d", getNewPort()))
 	assert.NoError(b, err)
-	upid2, err := upid.Parse("blackhole@localhost:8080")
+	upid2, err := upid.Parse("testserver@localhost:8080")
 	assert.NoError(b, err)
 
 	m1 := NewMesosMessenger(upid1)
@@ -304,15 +304,14 @@ func BenchmarkMessengerSendRecvSmallMessage(b *testing.B) {
 	assert.NoError(b, m2.Start())
 	assert.NoError(b, m2.Install(noopHandler, &testmessage.SmallMessage{}))
 
+	time.Sleep(time.Second) // Avoid race on upid.
 	receivedMessages = 0
 	benchMessageCnt = b.N
 	b.ResetTimer()
 
-	go func() {
-		for i := 0; i < b.N; i++ {
-			m1.Send(upid2, messages[i%1000])
-		}
-	}()
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
 	<-done
 }
 
@@ -330,15 +329,14 @@ func BenchmarkMessengerSendRecvMediumMessage(b *testing.B) {
 	assert.NoError(b, m2.Start())
 	assert.NoError(b, m2.Install(noopHandler, &testmessage.MediumMessage{}))
 
+	time.Sleep(time.Second) // Avoid race on upid.
 	receivedMessages = 0
 	benchMessageCnt = b.N
 	b.ResetTimer()
 
-	go func() {
-		for i := 0; i < b.N; i++ {
-			m1.Send(upid2, messages[i%1000])
-		}
-	}()
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
 	<-done
 }
 
@@ -356,15 +354,14 @@ func BenchmarkMessengerSendRecvBigMessage(b *testing.B) {
 	assert.NoError(b, m2.Start())
 	assert.NoError(b, m2.Install(noopHandler, &testmessage.BigMessage{}))
 
+	time.Sleep(time.Second) // Avoid race on upid.
 	receivedMessages = 0
 	benchMessageCnt = b.N
 	b.ResetTimer()
 
-	go func() {
-		for i := 0; i < b.N; i++ {
-			m1.Send(upid2, messages[i%1000])
-		}
-	}()
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
 	<-done
 }
 
@@ -382,15 +379,14 @@ func BenchmarkMessengerSendRecvLargeMessage(b *testing.B) {
 	assert.NoError(b, m2.Start())
 	assert.NoError(b, m2.Install(noopHandler, &testmessage.LargeMessage{}))
 
+	time.Sleep(time.Second) // Avoid race on upid.
 	receivedMessages = 0
 	benchMessageCnt = b.N
 	b.ResetTimer()
 
-	go func() {
-		for i := 0; i < b.N; i++ {
-			m1.Send(upid2, messages[i%1000])
-		}
-	}()
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
 	<-done
 }
 
@@ -411,14 +407,13 @@ func BenchmarkMessengerSendRecvMixedMessage(b *testing.B) {
 	assert.NoError(b, m2.Install(noopHandler, &testmessage.BigMessage{}))
 	assert.NoError(b, m2.Install(noopHandler, &testmessage.LargeMessage{}))
 
+	time.Sleep(time.Second) // Avoid race on upid.
 	receivedMessages = 0
 	benchMessageCnt = b.N
 	b.ResetTimer()
 
-	go func() {
-		for i := 0; i < b.N; i++ {
-			m1.Send(upid2, messages[i%1000])
-		}
-	}()
+	for i := 0; i < b.N; i++ {
+		m1.Send(upid2, messages[i%1000])
+	}
 	<-done
 }
