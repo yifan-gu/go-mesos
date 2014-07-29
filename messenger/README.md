@@ -1,4 +1,4 @@
-###Benchmark of the messenger.
+####Benchmark of the messenger.
 
 ```shell
 $ go test -v -run=Bench* -bench=. -cpu=4 -send-routines=4
@@ -18,8 +18,8 @@ ok github.com/yifan-gu/go-mesos/messenger 112.142s
  
 ####environment:
 
+```
 OS: Linux yifan-laptop 3.13.0-32-generic #57-Ubuntu SMP Tue Jul 15 03:51:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-
 CPU: Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz
-
 MEM: 4G DDR3 1600MHz
+```
